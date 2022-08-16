@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/drawable/border.xml" value="0.3828125" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_add_grocery_item.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_add_shopping_centre_page.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_add_shopping_list_page.xml" value="0.2015625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_grocery_list_page.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_home_page.xml" value="0.2554347826086957" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_main.xml" value="0.2554347826086957" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_main_drawer.xml" value="0.2554347826086957" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_maps.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_maps2.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_shopping_centre_page.xml" value="0.2015625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_view_grocery_item.xml" value="0.19427083333333334" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_view_grocery_item_page.xml" value="0.19791666666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_view_shopping_list_modify_page.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_view_shopping_list_page.xml" value="0.25" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/activity_view_shpping_centre.xml" value="0.19427083333333334" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/adapter_grocery_item_in_shop.xml" value="0.33" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/adapter_grocery_list.xml" value="0.5" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/adapter_patient.xml" value="0.33" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/adapter_shopping_centres.xml" value="0.2015625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/adapter_shopping_list.xml" value="0.33" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/layout/nav_header_main.xml" value="0.2554347826086957" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Assignment2/app/src/main/res/menu/activity_main_drawer.xml" value="0.20520833333333333" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/nav_group_main"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_shopping_list"
+            android:enabled="true"
+            android:title="Shopping Lists"
+            android:icon="@drawable/ic_shopping_cart" />
+
+        <item
+            android:id="@+id/action_grocery_list"
+            android:enabled="true"
+            android:title="Grocery List"
+            android:icon="@drawable/ic_grocery" />
+
+        <item
+            android:id="@+id/action_shopping_centre"
+            android:iconTint="@color/app_color"
+            android:icon="@drawable/ic_mall"
+            android:title="Shopping Centres" />
+
+        <item
+            android:id="@+id/action_add_shopping"
+            android:enabled="true"
+            android:title="Add Shopping List"
+            android:icon="@drawable/ic_add_shopping" />
+
+        <item
+            android:id="@+id/action_add_grocery"
+            android:enabled="true"
+            android:title="Add Grocery Item"
+            android:icon="@drawable/ic_add_grocery" />
+
+        <item
+            android:id="@+id/add_shopping_centre"
+            android:iconTint="@color/app_color"
+            android:icon="@drawable/ic_add_shop"
+            android:title="Add Shopping Centre" />
+    </group>
+
+    <group android:id="@+id/nav_group_add"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_main"
+            android:icon="@drawable/icon_home_admin"
+            android:iconTint="@color/app_color"
+            android:title="@string/action_main" />
+
+        <item
+            android:id="@+id/action_logout_admin2"
+            android:enabled="true"
+            android:title="Logout"
+            android:icon="@drawable/ic_logout" />
+    </group>
+</menu>
