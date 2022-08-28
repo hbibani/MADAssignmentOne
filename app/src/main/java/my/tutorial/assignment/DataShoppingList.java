@@ -10,6 +10,8 @@ public class DataShoppingList {
     //Not stored in database
     public String shopName;
     public String location;
+    public boolean deletecheck;
+    public boolean present;
 
 
     public DataShoppingList(String shoppinglistid, String shopid, String dateTime, String shopName, String location) {
@@ -18,6 +20,8 @@ public class DataShoppingList {
         this.dateTime = dateTime;
         this.shopName = shopName;
         this.location = location;
+        this.deletecheck = false;
+        this.present = false;
     }
 
     public String getShopName()
@@ -40,6 +44,5 @@ public class DataShoppingList {
     {
 
     }
-
 
 }

@@ -46,13 +46,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="0dp"
                 android:fontFamily="@font/poppinsbold"
                 android:gravity="center"
-                android:text="Modify Shopping Centre"
                 android:textColor="@color/colorAccent"
                 android:textSize="25sp"
-                tools:targetApi="jelly_bean" />
+                tools:targetApi="jelly_bean"
+                android:text="Modify Shopping Centre" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -63,11 +63,13 @@
                 android:text="Shopping Centre Details"
                 android:textColor="@color/black"
                 android:textSize="15sp"
+                android:padding="5dp"
                 tools:targetApi="jelly_bean" />
 
             <View
                 style="@style/Divider"
                 android:layout_height="2dp"
+                android:padding="10dp"
                 android:background="@color/green"/>
 
             <TextView

@@ -39,23 +39,26 @@ import java.util.List;
 public class AddShoppingListPage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    SharedPreferences pref;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
     MaterialAutoCompleteTextView autoedittext;
-    JSONArray med2;
     String shopID;
     ArrayList<String> shopLocationList;
     ArrayAdapter<String> shopAdapater;
     EditText date_time_in;
     String datetime3;
     List<DataShoppingCentre> data3;
+    EditText identification;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_shopping_list_page);
+        identification = findViewById(R.id.id_des);
+
+        //set tool bar and navigation drawer
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -65,6 +68,8 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //implement auto set on locatiohn
         autoedittext = (MaterialAutoCompleteTextView) findViewById(R.id.auto_text);
         initializeEditList();
         date_time_in=findViewById(R.id.date_time_input);
@@ -79,6 +84,7 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
 
         shopID = " ";
 
+        //set auto edit text  to search for shoplocation
         autoedittext.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id)
@@ -125,23 +131,34 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
         }
     }
 
+    //add shopping list to the database
     public void addShoppingList(View view)
     {
         DataBaseHelper databasehelper = new DataBaseHelper(AddShoppingListPage.this);
         DataShoppingList shoppinglist = new DataShoppingList();
-        shoppinglist.shopid = shopID;
-        shoppinglist.dateTime = datetime3;
-        if(databasehelper.addShoppingList(shoppinglist))
+        boolean validateshop = validateShop(shopID);
+        boolean validateid = validateIdentification(identification.getText().toString());
+
+        boolean validatedate = validateDate(datetime3);
+        if(validatedate && validateshop && validateid)
         {
-            startActivity(new Intent(AddShoppingListPage.this, AddShoppingListPage.class));
-            Toast.makeText(getApplicationContext(),"Added to the database.", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
+            shoppinglist.shoppinglistid = identification.getText().toString();
+            shoppinglist.shopid = shopID;
+            shoppinglist.dateTime = datetime3;
+            if(databasehelper.addShoppingList(shoppinglist))
+            {
+                startActivity(new Intent(AddShoppingListPage.this, AddShoppingListPage.class));
+                Toast.makeText(getApplicationContext(),"Added to the database.", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
+
+    //Navigation item link selections to move to page needed
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -169,15 +186,6 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
             case R.id.nav_main:
                 startActivity(new Intent(AddShoppingListPage.this, HomePage.class));
                 break;
-            case R.id.action_logout_admin2:
-            {
-                pref=this.getSharedPreferences("NewsTweetSettings", 0);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(AddShoppingListPage.this,  MainActivity.class));
-            }
-            break;
         }
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -185,6 +193,7 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
 
     }
 
+    //show date and time dialog for user to select date and time
     private void showDateTimeDialog(final EditText date_time_in)
     {
         final Calendar calendar=Calendar.getInstance();
@@ -216,6 +225,78 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
         };
 
         new DatePickerDialog(AddShoppingListPage.this,dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+
+    //validate date time string and set input errors if needed
+    private boolean validateDate(String s)
+    {
+        if(s.isEmpty())
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError("Date cannot be empty.");
+            return false;
+        }
+        else
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError(null);
+            return true;
+        }
+    }
+
+    //validate shop string and place input errors if needed
+    private boolean validateShop(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
+        {
+            autoedittext.requestFocus();
+            autoedittext.setError("Field cannot be empty.");
+            return false;
+        }
+        else if (s.equals(" "))
+        {
+
+            autoedittext.setText("");
+            autoedittext.requestFocus();
+            autoedittext.setError("Pick a valid shop from the list.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            autoedittext.requestFocus();
+            autoedittext.setError("Shop name of length 1-50.");
+            return false;
+        }
+        else
+        {
+            autoedittext.setError(null);
+            return true;
+        }
+    }
+
+    //validate identification and set input errors if needed
+    private boolean validateIdentification(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
+        {
+            identification.requestFocus();
+            identification.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            identification.requestFocus();
+            identification.setError("Description of length 1-50.");
+            return false;
+        }
+        else
+        {
+            identification.setError(null);
+            return true;
+        }
     }
 
 }

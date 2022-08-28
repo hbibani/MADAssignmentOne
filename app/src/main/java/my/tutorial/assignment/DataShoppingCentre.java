@@ -27,14 +27,5 @@ public class DataShoppingCentre {
 
     public DataShoppingCentre() {
     }
-
-    @Override
-    public String toString() {
-        return "DataShoppingCentre{" +
-                "shopID='" + shopID + '\'' +
-                ", shopName='" + shopName + '\'' +
-                ", location='" + location + '\'' +
-                ", dateTime='" + dateTime + '\'' +
-                '}';
-    }
+    
 }

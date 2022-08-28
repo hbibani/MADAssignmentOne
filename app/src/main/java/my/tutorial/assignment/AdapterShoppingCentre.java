@@ -84,6 +84,7 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
             modifyButton = (Button) itemView.findViewById(R.id.view_button_des);
             mapButton = (Button) itemView.findViewById(R.id.map_button_des);
 
+            //set delete item listener and allow for a dialog to pop up before deleting
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
 
@@ -110,13 +111,14 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
             });
 
 
+            //modify the shopping center when modify button clicked
             modifyButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     modifyButton();
                 }
             });
 
-
+            //show map when map button is clicked
             mapButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     mapButton();
@@ -126,8 +128,7 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
         }
 
 
-
-
+        //go to map using location on click
         public void mapButton()
         {
             int position = this.getAdapterPosition();
@@ -145,7 +146,7 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
             context.startActivity(intent);
         }
 
-
+        //modify shopping centre if needed
         public void modifyButton()
         {
             int position = this.getAdapterPosition();
@@ -166,19 +167,6 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
         @Override
         public void onClick(View v)
         {
-            int position = this.getAdapterPosition();
-            DataShoppingCentre shopcentre = data.get(position);
-            String shoppingID = shopcentre.getShoppingID();
-            String shop = shopcentre.getShopName();
-            String location = shopcentre.getLocation();
-            String date = shopcentre.getDateTime();
-
-            Intent intent = new Intent(context, HomePage.class);
-            intent.putExtra("shopid", shoppingID);
-            intent.putExtra("shopname", shop);
-            intent.putExtra("location", location);
-            intent.putExtra("date", date);
-            context.startActivity(intent);
         }
 
 
@@ -201,6 +189,4 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
             context.startActivity(intent);
         }
     }
-
-
 }

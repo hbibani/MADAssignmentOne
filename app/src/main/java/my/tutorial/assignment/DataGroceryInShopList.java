@@ -8,17 +8,23 @@ public class DataGroceryInShopList {
     public String description;
     public String amount;
     public String dateTime;
+    public byte[] img;
+    public int grocerychecked;
+    public boolean deleteitemchecked;
 
     public DataGroceryInShopList() {
     }
 
-    public DataGroceryInShopList(String id2,String shopListID, String groceryID, String description, String amount, String dateTime) {
+    public DataGroceryInShopList(String id2,String shopListID, String groceryID, String description, String amount, String dateTime, int checked, byte[] img) {
         this.id = id2;
         this.shopListID = shopListID;
         this.groceryID = groceryID;
         this.description = description;
         this.amount = amount;
         this.dateTime = dateTime;
+        this.grocerychecked = checked;
+        this.img = img;
+        this.deleteitemchecked = false;
     }
 
     public String getId(){return this.id;}
@@ -33,18 +39,6 @@ public class DataGroceryInShopList {
         return this.dateTime;
     }
     public String getAmount() {return this.amount;}
-
-
-
-    @Override
-    public String toString() {
-        return "DataGroceryInShopList{" +
-                "id='" + id + '\'' +
-                ", shopListID='" + shopListID + '\'' +
-                ", groceryID='" + groceryID + '\'' +
-                ", description='" + description + '\'' +
-                ", amount='" + amount + '\'' +
-                ", dateTime='" + dateTime + '\'' +
-                '}';
-    }
+    public Integer getGrocerychecked(){return this.grocerychecked;}
+    
 }

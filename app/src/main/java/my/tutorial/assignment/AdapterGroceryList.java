@@ -3,10 +3,14 @@ package my.tutorial.assignment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,9 +55,16 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
         MyHolder myHolder= (MyHolder) holder;
         DataGroceryList current=data.get(position);
 
+
+        if(current.img != null)
+        {
+            Bitmap imagebit = BitmapFactory.decodeByteArray(current.img, 0 , current.img.length);
+            myHolder.image.setImageBitmap(imagebit);
+        }
         myHolder.id.setText("ID: " + current.groceryID );
         myHolder.desc.setText("Desc:" + current.description );
         myHolder.date.setText("Date: " + current.dateTime);
+
     }
 
     // return total item from List
@@ -71,6 +82,7 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
         ImageView image;
         Button deleteButton;
         Button viewButton;
+        CheckBox checkbox;
 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
@@ -80,34 +92,17 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
             desc = (TextView) itemView.findViewById(R.id.description_des);
             date = (TextView) itemView.findViewById(R.id.date_des);
             image = (ImageView) itemView.findViewById(R.id.image_des);
-            deleteButton = (Button) itemView.findViewById(R.id.delete_button_des);
+            //deleteButton = (Button) itemView.findViewById(R.id.delete_button_des);
             viewButton = (Button) itemView.findViewById(R.id.view_button_des);
+            checkbox = (CheckBox) itemView.findViewById(R.id.checkBox);
 
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-
-                    AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
-                            // set message, title, and icon
-                            .setTitle("Delete")
-                            .setMessage("Do you want to Delete")
-                            .setIcon(R.drawable.ic_baseline_delete_forever_24)
-
-                            .setPositiveButton("Delete", (dialog, whichButton) -> {
-                                deleteItem();
-                                dialog.dismiss();
-                            })
-                            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .create();
-
-                    myQuittingDialogBox.show();
-
+            //set check box item listener to see if item needs to be deleted
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkButton(isChecked);
                 }
             });
-
 
             viewButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -119,7 +114,25 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
 
+        //check if item is scheduled for deletion
+        public void checkButton(boolean ischecked)
+        {
+            int position = this.getAdapterPosition();
+            DataGroceryList groceryItem = data.get(position);
+            DataBaseHelper databasehelper = new DataBaseHelper(context);
 
+            if(ischecked)
+            {
+                groceryItem.deletecheck = true;
+            }
+            else
+            {
+                groceryItem.deletecheck = false;
+            }
+        }
+
+
+        //view grocery item for modification
         public void viewButton()
         {
             int position = this.getAdapterPosition();
@@ -138,43 +151,6 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
         @Override
         public void onClick(View v)
         {
-            int position = this.getAdapterPosition();
-            DataGroceryList grocerylist = data.get(position);
-            String shoppingID = grocerylist.getGroceryID();
-            String description = grocerylist.getDescription();
-            String date = grocerylist.getDateTime();
-
-            Intent intent = new Intent(context, HomePage.class);
-            intent.putExtra("id", shoppingID);
-            intent.putExtra("description", description);
-            intent.putExtra("date", date);
-            context.startActivity(intent);
         }
-
-
-        //Delete grocery item from database
-        private void deleteItem()
-        {
-            int position = this.getAdapterPosition();
-            DataGroceryList groceryitem = data.get(position);
-            DataBaseHelper databasehelper = new DataBaseHelper(context);
-            if(databasehelper.deleteGroceryItem(groceryitem ))
-            {
-                Toast.makeText(context,"Deleted item from database..", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                Toast.makeText(context,"Could not delete.", Toast.LENGTH_SHORT).show();
-            }
-
-            Intent intent = new Intent(context, GroceryListPage.class);
-            context.startActivity(intent);
-        }
-
     }
-
-
-
-
-
 }

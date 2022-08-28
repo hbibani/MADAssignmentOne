@@ -20,7 +20,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DATETIME_GROCERYITEM = "COLUMN_DATETIME_GROCERYITEM";
     public static final String COLUMN_DATETIME_SHOPPINGCENTRE = "COLUMN_DATETIME_SHOPPINGCENTRE";
     public static final String COLUMN_DATETIME_SHOPPINGLIST = "COLUMN_DATETIME_SHOPPINGLIST";
-    public static final String COLUMN_DATETIME_SHOPPINGLISTGROCERY = "COLUMN_DATETIME_SHOPPINGLISTGROCERY";
     public static final String COLUMN_GROCERYID = "groceryid";
     public static final String SHOPPING_CENTRE_TABLE = "SHOPPING_CENTRE_TABLE";
     public static final String COLUMN_SHOPID = "COLUMN_SHOPID";
@@ -31,8 +30,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String SHOPPINGLIST_GROCERY_TABLE = "SHOPPINGLIST_GROCERY_TABLE";
     public static final String COLUMN_SHOPPINGLIST_GROCERYID = "COLUMN_SHOPPINGLIST_GROCERYID";
     public static final String COLUMN_AMOUNT = "COLUMN_AMOUNT";
+    public static final String COLUMN_GROCERYCHECKED = "COLUMN_GROCERYCHECKED";
+    public static final String COLUMN_IMAGE = "COLUMN_IMAGE";
     public DataBaseHelper(@Nullable Context context) {
-        super(context, "shoppinglist.db", null, 1);
+        super(context, "shoppinglistdataperfect.db", null, 2);
     }
 
     //This is called the first time a database is accessed.
@@ -42,7 +43,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         //CREATE GROCERY ITEM TABLE
         String createTableStatement = "CREATE TABLE " + GROCERY_ITEM_TABLE + " ( " + COLUMN_GROCERYID + " INTEGER PRIMARY KEY NOT NULL,\n" +
                 "  " + COLUMN_DESCRIPTION + " TEXT \n" +
-                " , " + COLUMN_DATETIME_GROCERYITEM + " TEXT)";
+                " , " + COLUMN_DATETIME_GROCERYITEM + " TEXT, " + COLUMN_IMAGE + " BLOB)";
         db.execSQL(createTableStatement);
 
         //CREATE SHOPPING CENTRE TABLE
@@ -57,7 +58,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         //CREATE SHOPPING LIST GROCERY ITEM TABLE
         createTableStatement = "CREATE TABLE " + SHOPPINGLIST_GROCERY_TABLE + " ( " + COLUMN_SHOPPINGLIST_GROCERYID + " INTEGER PRIMARY KEY NOT NULL,\n" +
-                "  " + COLUMN_SHOPPINGLISTID + " INTEGER, " + COLUMN_GROCERYID + " INTEGER, " + COLUMN_AMOUNT + " TEXT, " + COLUMN_DATETIME_SHOPPINGLISTGROCERY + " TEXT, FOREIGN KEY (" + COLUMN_SHOPPINGLISTID + ") REFERENCES " +  SHOPPING_LIST_TABLE + "(" + COLUMN_SHOPPINGLISTID + " ), \n" +
+                "  " + COLUMN_SHOPPINGLISTID + " INTEGER, " + COLUMN_GROCERYID + " INTEGER, " + COLUMN_AMOUNT + " TEXT, " + COLUMN_GROCERYCHECKED + " INTEGER, " + "  FOREIGN KEY (" + COLUMN_SHOPPINGLISTID + ") REFERENCES " +  SHOPPING_LIST_TABLE + "(" + COLUMN_SHOPPINGLISTID + " ), \n" +
                 " FOREIGN KEY (" + COLUMN_GROCERYID + ") REFERENCES " +  GROCERY_ITEM_TABLE + "(" + COLUMN_GROCERYID + " ) )";
         db.execSQL(createTableStatement);
 
@@ -69,23 +70,29 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
+    //add grocery item to database
     public boolean addGroceryItem(DataGroceryList datagrocery)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put(COLUMN_GROCERYID, datagrocery.groceryID);
         cv.put(COLUMN_DESCRIPTION, datagrocery.description);
         cv.put(COLUMN_DATETIME_GROCERYITEM, datagrocery.dateTime);
+        cv.put(COLUMN_IMAGE, datagrocery.img);
         long insert = db.insert(GROCERY_ITEM_TABLE, null, cv);
         if(insert == -1)
         {
+            db.close();
             return false;
         }
         else
         {
+            db.close();
             return true;
         }
     }
 
+    //get all grocery items to display in a list
     public List<DataGroceryList> getAllGroceryItems(){
         List<DataGroceryList> returnList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -98,7 +105,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 int groceritemid = cursor.getInt(0);
                 String description = cursor.getString(1);
                 String datetime = cursor.getString(2);
-                DataGroceryList groceryitem = new DataGroceryList(Integer.toString(groceritemid), description, datetime);
+                byte[] img = cursor.getBlob(3);
+                DataGroceryList groceryitem = new DataGroceryList(Integer.toString(groceritemid), description, datetime,img);
                 returnList.add(groceryitem);
             }while(cursor.moveToNext());
         }
@@ -112,16 +120,35 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+    //delete grocery item
     public boolean deleteGroceryItem(DataGroceryList dataitem){
         SQLiteDatabase db = this.getReadableDatabase();
+
+        //delete all entries of the grocery in a shopping list
+        String queryString1 = "DELETE FROM " + SHOPPINGLIST_GROCERY_TABLE + " WHERE " + COLUMN_GROCERYID + " = " + dataitem.groceryID;
+        Cursor cursor1 = db.rawQuery(queryString1, null);
+        if(cursor1.moveToFirst())
+        {
+            cursor1.close();
+            db.close();
+            return false;
+        }
+
+        //finally delete the grocery item
         String queryString = "DELETE FROM " + GROCERY_ITEM_TABLE + " WHERE " + COLUMN_GROCERYID + " = " + dataitem.groceryID;
         Cursor cursor = db.rawQuery(queryString, null);
         if(cursor.moveToFirst())
         {
+            cursor1.close();
+            cursor.close();
+            db.close();
             return false;
         }
         else
         {
+            cursor1.close();
+            cursor.close();
+            db.close();
             return true;
         }
 
@@ -129,7 +156,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     //Update grocery Details
-    public boolean updateGroceryItem(String s1, String s2, String s3)
+    public boolean updateGroceryItem(String s1, String s2, String s3, byte[] img)
     {
         boolean isSuccessFul = false;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -137,14 +164,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_GROCERYID, s1);
         cv.put(COLUMN_DESCRIPTION, s2);
         cv.put(COLUMN_DATETIME_GROCERYITEM, s3);
+        cv.put(COLUMN_IMAGE, img);
 
         try {
             // Execute the update
             db.update(GROCERY_ITEM_TABLE, cv, COLUMN_GROCERYID+"=?", new String[]{s1});
             isSuccessFul = true;
         } catch(Exception e) {
-
+            db.close();
+            return isSuccessFul;
         } finally {
+            db.close();
             return isSuccessFul;
         }
     }
@@ -161,10 +191,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             int groceritemid = cursor.getInt(0);
             String description = cursor.getString(1);
             String datetime = cursor.getString(2);
-            DataGroceryList groceryitem = new DataGroceryList(Integer.toString(groceritemid), description, datetime);
+            byte[] img = cursor.getBlob(3);
+            DataGroceryList groceryitem = new DataGroceryList(Integer.toString(groceritemid), description, datetime, img);
+            cursor.close();
+            db.close();
             return groceryitem;
         }
 
+        cursor.close();
+        db.close();
         return null;
     }
 
@@ -183,10 +218,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         long insert = db.insert(SHOPPING_CENTRE_TABLE, null, cv);
         if(insert == -1)
         {
+            db.close();
             return false;
         }
         else
         {
+            db.close();
             return true;
         }
     }
@@ -221,18 +258,49 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
-
+    //delete shopping centre from the database
     public boolean deleteShoppingCentre(DataShoppingCentre dataitem)
     {
         SQLiteDatabase db = this.getReadableDatabase();
+
+        //delete all the items in the grocery list associated with that shop
+        String queryString2 = "DELETE FROM " + SHOPPINGLIST_GROCERY_TABLE + " WHERE COLUMN_SHOPPINGLISTID IN ( SELECT COLUMN_SHOPPINGLISTID FROM SHOPPING_LIST_TABLE WHERE COLUMN_SHOPID = " + dataitem.shopID + " )";
+        Cursor cursor3 = db.rawQuery(queryString2, null);
+        if(cursor3.moveToFirst())
+        {
+            cursor3.close();
+            db.close();
+            return false;
+        }
+
+        //delete shopping list that have that have shop id
+        String queryString1 = "DELETE FROM " + SHOPPING_LIST_TABLE + " WHERE " + COLUMN_SHOPID+ " = " + dataitem.shopID;
+        Cursor cursor2 = db.rawQuery(queryString1, null);
+        if(cursor2.moveToFirst())
+        {
+            cursor3.close();
+            cursor2.close();
+            db.close();
+            return false;
+        }
+
+        //finally delete shop
         String queryString = "DELETE FROM " + SHOPPING_CENTRE_TABLE + " WHERE " + COLUMN_SHOPID+ " = " + dataitem.shopID;
         Cursor cursor = db.rawQuery(queryString, null);
         if(cursor.moveToFirst())
         {
+            cursor3.close();
+            cursor2.close();
+            cursor.close();
+            db.close();
             return false;
         }
         else
         {
+            cursor3.close();
+            cursor2.close();
+            cursor.close();
+            db.close();
             return true;
         }
 
@@ -252,9 +320,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String location = cursor.getString(2);
             String datetime = cursor.getString(3);
             DataShoppingCentre shoppingcentre = new DataShoppingCentre(Integer.toString(shopid),shopname,location, datetime);
+            cursor.close();
+            db.close();
             return shoppingcentre;
         }
 
+
+        cursor.close();
+        db.close();
         return null;
     }
 
@@ -275,8 +348,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             db.update(SHOPPING_CENTRE_TABLE, cv, COLUMN_SHOPID+"=?", new String[]{s1});
             isSuccessFul = true;
         } catch(Exception e) {
+            db.close();
             return isSuccessFul;
         } finally {
+            db.close();
             return isSuccessFul;
         }
     }
@@ -290,20 +365,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put(COLUMN_SHOPPINGLISTID, datashopping.shoppinglistid);
         cv.put(COLUMN_SHOPID, datashopping.shopid);
         cv.put(COLUMN_DATETIME_SHOPPINGLIST, datashopping.dateTime);
         long insert = db.insert(SHOPPING_LIST_TABLE, null, cv);
         if(insert == -1)
         {
+            db.close();
             return false;
         }
         else
         {
+            db.close();
             return true;
         }
     }
 
-
+    //retrieve all shopping lists for the display of the results
     public List<DataShoppingList> getAllShoppingLists()
     {
         List<DataShoppingList> returnList = new ArrayList<>();
@@ -335,17 +413,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+    //delete shopping list
     public boolean deleteShoppingList(DataShoppingList dataitem)
     {
         SQLiteDatabase db = this.getReadableDatabase();
+        //delete all the grocery items associated with that shopping list
+        String queryString1 = "DELETE FROM " + SHOPPINGLIST_GROCERY_TABLE + " WHERE " + COLUMN_SHOPPINGLISTID+ " = " + dataitem.shoppinglistid;
+        Cursor cursor1 = db.rawQuery(queryString1, null);
+        if(cursor1.moveToFirst())
+        {
+            return false;
+        }
+
+        //delete the shopping list next
         String queryString = "DELETE FROM " + SHOPPING_LIST_TABLE + " WHERE " + COLUMN_SHOPPINGLISTID+ " = " + dataitem.shoppinglistid;
         Cursor cursor = db.rawQuery(queryString, null);
         if(cursor.moveToFirst())
         {
+            cursor1.close();
+            cursor.close();
+            db.close();
             return false;
         }
         else
         {
+            cursor1.close();
+            cursor.close();
+            db.close();
             return true;
         }
 
@@ -364,25 +458,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_SHOPPINGLISTID, datashopping.shopListID);
         cv.put(COLUMN_GROCERYID, datashopping.groceryID);
         cv.put(COLUMN_AMOUNT, datashopping.amount);
-        cv.put(COLUMN_DATETIME_SHOPPINGLISTGROCERY, datashopping.dateTime);
+        cv.put(COLUMN_GROCERYCHECKED, datashopping.grocerychecked);
         long insert = db.insert(SHOPPINGLIST_GROCERY_TABLE, null, cv);
         if(insert == -1)
         {
+
+            db.close();
             return false;
         }
         else
         {
+            db.close();
             return true;
         }
     }
 
 
     //Retrieve all grocery items for list of groceries in adapter
-    public List<DataGroceryInShopList> getAllGroceryItemsInShoppingLists()
+    public List<DataGroceryInShopList> getAllGroceryItemsInShoppingLists(String s)
     {
         List<DataGroceryInShopList> returnList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT * FROM " + SHOPPINGLIST_GROCERY_TABLE + " join GROCERY_ITEM_TABLE on SHOPPINGLIST_GROCERY_TABLE.groceryid = GROCERY_ITEM_TABLE.groceryid";
+        String queryString = "SELECT * FROM " + SHOPPINGLIST_GROCERY_TABLE + " join GROCERY_ITEM_TABLE on SHOPPINGLIST_GROCERY_TABLE.groceryid = GROCERY_ITEM_TABLE.groceryid WHERE " + COLUMN_SHOPPINGLISTID+ " = " + s;
         Cursor cursor = db.rawQuery(queryString,null);
 
 
@@ -394,9 +491,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 int shoplistid = cursor.getInt(1);
                 int groceryid = cursor.getInt(2);
                 String amount = cursor.getString(3);
-                String datetime = cursor.getString(4);
+                int checked = cursor.getInt(4);
                 String description = cursor.getString(6);
-                DataGroceryInShopList groceryitem = new DataGroceryInShopList(Integer.toString(shoppinglistgroeryid),Integer.toString(shoplistid ), Integer.toString(groceryid),description ,amount, datetime);
+                String datetime = cursor.getString(7);
+                byte[] img = cursor.getBlob(8);
+                DataGroceryInShopList groceryitem = new DataGroceryInShopList(Integer.toString(shoppinglistgroeryid),Integer.toString(shoplistid ), Integer.toString(groceryid),description ,amount, datetime,checked, img);
                 returnList.add(groceryitem);
             }while(cursor.moveToNext());
         }
@@ -410,6 +509,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return returnList;
     }
 
+    //delete grocery item in a shopping list
     public boolean deleteGroceryItemInShoppingList(DataGroceryInShopList groceryitems)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -417,12 +517,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(queryString, null);
         if(cursor.moveToFirst())
         {
+            cursor.close();
+            db.close();
             return false;
         }
         else
         {
+            cursor.close();
+            db.close();
             return true;
         }
+
+
     }
 
     //Modify shop and date in shopping list
@@ -439,9 +545,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             db.update(SHOPPING_LIST_TABLE, cv, COLUMN_SHOPPINGLISTID+"=?", new String[]{shoppinglist.shoppinglistid});
             isSuccessFul = true;
         } catch(Exception e) {
+            db.close();
             return isSuccessFul;
         } finally {
+            db.close();
             return isSuccessFul;
         }
+    }
+
+    //check item to say it has been taken in grocery table
+    public boolean checkTheGroceryIteam(String s1,int i)
+    {
+        boolean isSuccessFul = false;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_GROCERYCHECKED, i);
+
+        try {
+            // Execute the update
+            db.update(SHOPPINGLIST_GROCERY_TABLE, cv, COLUMN_SHOPPINGLIST_GROCERYID+"=?", new String[]{s1});
+            isSuccessFul = true;
+        } catch(Exception e) {
+            db.close();
+            return isSuccessFul;
+        } finally {
+            db.close();
+            return isSuccessFul;
+        }
+
     }
 }

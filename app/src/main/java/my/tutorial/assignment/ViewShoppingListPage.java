@@ -2,6 +2,7 @@ package my.tutorial.assignment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,15 +37,11 @@ import java.util.List;
 public class ViewShoppingListPage extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
 
 
-    EditText date_time_in;
     MaterialAutoCompleteTextView autoedittext;
     EditText amount;
-    String datetime3;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
-    SharedPreferences pref;
-
     private RecyclerView mRVGrocery;
     private AdapterGroceryInShoplist mAdapter;
     List<DataGroceryInShopList> data3;
@@ -57,20 +55,16 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_shopping_list_page);
-        date_time_in=findViewById(R.id.date_time_input);
-        date_time_in.setInputType(InputType.TYPE_NULL);
-        datetime3 = "";
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
-
-
         Intent intent = getIntent();
-        shoppinglistID = intent.getStringExtra("shopid");
+        shoppinglistID = intent.getStringExtra("shopinglistid");
         amount = findViewById(R.id.amount_grocery);
         autoedittext = (MaterialAutoCompleteTextView) findViewById(R.id.auto_text);
         initializeEditList();
 
-
+        groceryID = " ";
+        //set auto-edit text set on item click listener
         autoedittext.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id)
@@ -90,6 +84,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
             }
         });
 
+        //get the drawer layout functions
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.bringToFront();
@@ -97,16 +92,10 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        date_time_in.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateTimeDialog(date_time_in);
-            }
-        });
-
         fetchGroceryDetails2();
     }
 
+    //initialize search for shop function
     private void initializeEditList()
     {
         groceryItemList = new ArrayList<String>();
@@ -129,6 +118,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
         }
     }
 
+    //set navigation links for movement from page to page for the navigation drawer
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -156,15 +146,6 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
             case R.id.nav_main:
                 startActivity(new Intent(ViewShoppingListPage.this, HomePage.class));
                 break;
-            case R.id.action_logout_admin2:
-            {
-                pref=this.getSharedPreferences("NewsTweetSettings", 0);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(ViewShoppingListPage.this,  MainActivity.class));
-            }
-            break;
         }
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -173,61 +154,32 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     }
 
 
-
-
-    private void showDateTimeDialog(final EditText date_time_in)
-    {
-        final Calendar calendar=Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener dateSetListener=new DatePickerDialog.OnDateSetListener()
-        {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
-            {
-                calendar.set(Calendar.YEAR,year);
-                calendar.set(Calendar.MONTH,month);
-                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-
-                TimePickerDialog.OnTimeSetListener timeSetListener=new TimePickerDialog.OnTimeSetListener()
-                {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute)
-                    {
-                        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                        calendar.set(Calendar.MINUTE,minute);
-
-                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        date_time_in.setText(simpleDateFormat.format(calendar.getTime()));
-                        datetime3 = simpleDateFormat.format(calendar.getTime());
-                    }
-                };
-
-                new TimePickerDialog(ViewShoppingListPage.this,timeSetListener,calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),false).show();
-            }
-        };
-
-        new DatePickerDialog(ViewShoppingListPage.this,dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
-    }
-
     //Add Grocery Item to shopping list
     public void addGroceryItem(View view)
     {
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListPage.this);
         DataGroceryInShopList datagroceryitem = new DataGroceryInShopList();
-        datagroceryitem.shopListID= shoppinglistID;
-        datagroceryitem.groceryID = groceryID;
-        datagroceryitem.amount = amount.getText().toString();
-        datagroceryitem.dateTime = datetime3;
+        boolean validategroceryid = validateGroceryID(groceryID);
+        boolean validateamount = validateAmount(amount.getText().toString());
 
-        if(databasehelper.addGroceryItemToShoppingList(datagroceryitem))
+        if(validateamount && validategroceryid)
         {
-            Toast.makeText(getApplicationContext(),"Added to the database.", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(ViewShoppingListPage.this, ViewShoppingListPage.class);
-            intent.putExtra("shopid", shoppinglistID );
-            ViewShoppingListPage.this.startActivity(intent);
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
+            datagroceryitem.shopListID= shoppinglistID;
+            datagroceryitem.groceryID = groceryID;
+            datagroceryitem.amount = amount.getText().toString();
+            datagroceryitem.grocerychecked = 0;
+
+            if(databasehelper.addGroceryItemToShoppingList(datagroceryitem))
+            {
+                Toast.makeText(getApplicationContext(),"Added to the database.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ViewShoppingListPage.this, ViewShoppingListPage.class);
+                intent.putExtra("shopinglistid", shoppinglistID );
+                ViewShoppingListPage.this.startActivity(intent);
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -238,10 +190,119 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListPage.this);
         data3 = new ArrayList<>();
         data3.clear();
-        data3 = databasehelper.getAllGroceryItemsInShoppingLists();
+        data3 = databasehelper.getAllGroceryItemsInShoppingLists(shoppinglistID);
         mRVGrocery = (RecyclerView) findViewById(R.id.admissionList2);
         mAdapter = new AdapterGroceryInShoplist(ViewShoppingListPage.this, data3);
         mRVGrocery.setAdapter(mAdapter);
         mRVGrocery.setLayoutManager(new LinearLayoutManager(ViewShoppingListPage.this));
+    }
+
+
+    // validate grocery and set-input errors if needed
+    private boolean validateGroceryID(String s)
+    {
+
+        if(s.equals(" "))
+        {
+            autoedittext.setText("");
+            autoedittext.requestFocus();
+            autoedittext.setError("Pick a grocery from the list.");
+            return false;
+        }
+        else if(s.isEmpty())
+        {
+            autoedittext.setText("");
+            autoedittext.requestFocus();
+            autoedittext.setError("Pick a grocery from the list.");
+            return false;
+        }
+        else
+        {
+            autoedittext.setError(null);
+            return true;
+        }
+    }
+
+
+    //validate amount and set input errors
+    private boolean validateAmount(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
+        {
+            amount.requestFocus();
+            amount.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            amount.requestFocus();
+            amount.setError("Amount of length 1-50.");
+            return false;
+        }
+        else
+        {
+            amount.setError(null);
+            return true;
+        }
+    }
+
+    //delete grocery item and show dialog before deleting
+    public void deleteGroceryItem(View view)
+    {
+
+        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
+                // set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Do you want to Delete")
+                .setIcon(R.drawable.ic_baseline_delete_forever_24)
+
+                .setPositiveButton("Delete", (dialog, whichButton) -> {
+                    deleteShoppingItem();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+
+        myQuittingDialogBox.show();
+    }
+
+    //delete shopping items from shopping list
+    private void deleteShoppingItem()
+    {
+        boolean test = false;
+        for(int i = 0; i < data3.size(); i++)
+        {
+            if(data3.get(i).deleteitemchecked)
+            {
+                test = true;
+                break;
+            }
+        }
+
+        if(test)
+        {
+            for(int i = 0; i < data3.size(); i++)
+            {
+                if(data3.get(i).deleteitemchecked == true)
+                {
+                    DataGroceryInShopList groceryitems = data3.get(i);
+                    DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListPage.this);
+                    databasehelper.deleteGroceryItemInShoppingList(groceryitems);
+                }
+            }
+            Intent intent = new Intent(ViewShoppingListPage.this, ViewShoppingListPage.class);
+            intent.putExtra("shopinglistid", shoppinglistID );
+            ViewShoppingListPage.this.startActivity(intent);
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"There are no items to delete.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

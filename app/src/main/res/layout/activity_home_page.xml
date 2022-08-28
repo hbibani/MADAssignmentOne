@@ -45,13 +45,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="0dp"
-                android:gravity="center_horizontal"
-                android:text="Shopping Lists"
-                android:textColor="#3F4775"
-                android:textSize="50dp"
-                android:textStyle="bold" />
+                android:layout_marginTop="0dp"
+                android:fontFamily="@font/poppinsbold"
+                android:gravity="center"
+                android:textColor="@color/colorAccent"
+                android:textSize="25sp"
+                tools:targetApi="jelly_bean"
+                android:text="Shopping Lists" />
 
             <TextView
                 android:id="@+id/textView1"
@@ -62,6 +62,7 @@
                 android:text="Shopping Lists"
                 android:textColor="@color/black"
                 android:textSize="15sp"
+                android:padding="5dp"
                 tools:targetApi="jelly_bean" />
 
             <View
@@ -72,7 +73,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/admissionList"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_weight="1"
                 android:paddingTop="10dp" />
 
@@ -81,7 +82,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/delete_button_des"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="256dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="0dp"
+                    android:text="Delete"
+                    android:onClick="deleteShoppingListItem" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </androidx.drawerlayout.widget.DrawerLayout>

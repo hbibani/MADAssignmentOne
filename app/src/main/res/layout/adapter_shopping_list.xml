@@ -94,17 +94,16 @@
         android:background="@color/green"
         android:text="View" />
 
-    <Button
-        android:id="@+id/delete_button_des"
-        style="@style/Widget.AppCompat.Button.Colored"
+
+    <CheckBox
+        android:id="@+id/checkBox"
         android:layout_width="wrap_content"
-        android:layout_height="34dp"
-        android:layout_gravity="center"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="15dp"
         android:layout_toRightOf="@+id/view_button_des"
-        android:background="#F1B2F1"
         android:text="Delete" />
+
 
     <Button
         android:id="@+id/map_button_des"
@@ -129,7 +128,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="34dp"
-        android:layout_below="@id/delete_button_des"
+        android:layout_below="@id/checkBox"
         android:layout_gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"

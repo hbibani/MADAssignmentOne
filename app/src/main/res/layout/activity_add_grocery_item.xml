@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".AddShoppingListPage"
+    tools:context=".AddGroceryItem"
     tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
@@ -20,11 +20,8 @@
 
 
     <ScrollView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
         tools:ignore="MergeRootFrame"
         android:fillViewport="true"
         android:paddingBottom="72dp">
@@ -46,13 +43,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="0dp"
                 android:fontFamily="@font/poppinsbold"
                 android:gravity="center"
-                android:text="+Grocery Item"
                 android:textColor="@color/colorAccent"
-                android:textSize="30sp"
-                tools:targetApi="jelly_bean" />
+                android:textSize="25sp"
+                tools:targetApi="jelly_bean"
+                android:text="+Grocery Item" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -63,12 +60,45 @@
                 android:text="Grocery Details"
                 android:textColor="@color/black"
                 android:textSize="15sp"
+                android:padding="5dp"
                 tools:targetApi="jelly_bean" />
 
             <View
                 style="@style/Divider"
                 android:layout_height="2dp"
                 android:background="@color/green"/>
+
+            <TextView
+                android:id="@+id/idtext"
+                android:layout_width="185dp"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Identification"
+                android:fontFamily="@font/poppinsmedium"
+                android:textColor="@color/green"
+                android:textSize="17dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/id_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:hint="ID"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/id_des"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_description"
+                    android:fontFamily="@font/poppinsmedium"
+                    tools:targetApi="jelly_bean" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/searchtext"
@@ -104,14 +134,13 @@
 
             <TextView
                 android:id="@+id/datetext"
-                android:layout_width="185dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:text="Date and Time"
                 android:fontFamily="@font/poppinsmedium"
                 android:textColor="@color/green"
                 android:textSize="17dp" />
-
 
             <EditText
                 android:hint="SELECT DATE and Time"
@@ -123,6 +152,37 @@
                 android:layout_height="35dp"
                 android:fontFamily="@font/poppinsmedium"
                 android:background="@drawable/border" />
+
+
+            <TextView
+                android:id="@+id/iamgetext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Select Image"
+                android:fontFamily="@font/poppinsmedium"
+                android:textColor="@color/green"
+                android:textSize="17dp" />
+
+            <!--ImageView to preview the selected image-->
+            <ImageView
+                android:id="@+id/IVPreviewImage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="0dp"
+                android:background="@drawable/image_default"/>
+
+            <Button
+                android:id="@+id/image_picker"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="0dp"
+                android:text="Add Image"
+                android:onClick="addImageItem" />
+
 
             <Button
                 android:id="@+id/signin"

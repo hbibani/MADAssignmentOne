@@ -44,13 +44,14 @@ public class ShoppingCentrePage extends AppCompatActivity implements NavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_centre_page);
+
+        //set toolbar and navigation drawer
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.bringToFront();
         navigationView.setNavigationItemSelectedListener(this);
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -58,6 +59,7 @@ public class ShoppingCentrePage extends AppCompatActivity implements NavigationV
 
     }
 
+    //navigation item interface to move from page to page using the navigation drawer
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -85,15 +87,6 @@ public class ShoppingCentrePage extends AppCompatActivity implements NavigationV
             case R.id.nav_main:
                 startActivity(new Intent(ShoppingCentrePage.this, HomePage.class));
                 break;
-            case R.id.action_logout_admin2:
-            {
-                pref=this.getSharedPreferences("NewsTweetSettings", 0);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(ShoppingCentrePage.this,  MainActivity.class));
-            }
-            break;
         }
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -101,6 +94,7 @@ public class ShoppingCentrePage extends AppCompatActivity implements NavigationV
 
     }
 
+    //fetch centre detials to produce list in recycler view
     private void fetchCentreDetails() {
         data3 = new ArrayList<>();
         DataBaseHelper databasehelper = new DataBaseHelper(ShoppingCentrePage.this);

@@ -47,11 +47,13 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
         location = findViewById(R.id.location_des);
         Intent intent = getIntent();
         id = intent.getStringExtra("shopid");
+        datetime3 = intent.getStringExtra("date");
         date_time_in=findViewById(R.id.date_time_input);
         date_time_in.setInputType(InputType.TYPE_NULL);
-        datetime3 = "";
         getItemInformation();
 
+
+        //set toolbar and navitgation items
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -61,6 +63,8 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //date set to show time dialogue
         date_time_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +85,7 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
             shopname.setText(datashopping.shopName);
             location.setText(datashopping.location);
             date_time_in.setText(datashopping.dateTime);
-
+            datetime3 = datashopping.dateTime;
         }
         else
         {
@@ -94,26 +98,34 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     public void modifyShoppingCentre(View view)
     {
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingCentre.this);
-        String s1 = shopname.getText().toString();
-        String s2 = location.getText().toString();
-        String s3 = date_time_in.getText().toString();
-        if(databasehelper.updateShoppingCentre(id,s1,s2,s3))
-        {
-            Intent intent = new Intent(ViewShoppingCentre.this, ViewShoppingCentre.class);
-            intent.putExtra("shopid", id);
-            Toast.makeText(ViewShoppingCentre.this,"Update successful.", Toast.LENGTH_SHORT).show();
-            ViewShoppingCentre.this.startActivity(intent);
-        }
-        else
-        {
-            Intent intent = new Intent(ViewShoppingCentre.this, ViewShoppingCentre.class);
-            intent.putExtra("shopid", id);
-            Toast.makeText(ViewShoppingCentre.this,"Could not update information.", Toast.LENGTH_SHORT).show();
-            ViewShoppingCentre.this.startActivity(intent);
-        }
 
+        boolean validateshopname = validateShopName(shopname.getText().toString());
+        boolean validatelocation = validateLocation(location.getText().toString());
+        boolean validatedate = validateDate(datetime3);
+        if(validateshopname &&
+                validatelocation && validatedate)
+        {
+            String s1 = shopname.getText().toString();
+            String s2 = location.getText().toString();
+            String s3 = date_time_in.getText().toString();
+            if(databasehelper.updateShoppingCentre(id,s1,s2,s3))
+            {
+                Intent intent = new Intent(ViewShoppingCentre.this, ViewShoppingCentre.class);
+                intent.putExtra("shopid", id);
+                Toast.makeText(ViewShoppingCentre.this,"Update successful.", Toast.LENGTH_SHORT).show();
+                ViewShoppingCentre.this.startActivity(intent);
+            }
+            else
+            {
+                Intent intent = new Intent(ViewShoppingCentre.this, ViewShoppingCentre.class);
+                intent.putExtra("shopid", id);
+                Toast.makeText(ViewShoppingCentre.this,"Could not update information.", Toast.LENGTH_SHORT).show();
+                ViewShoppingCentre.this.startActivity(intent);
+            }
+        }
     }
 
+    //delete shopping centere from database
     public void deleteShoppingCentre(View view)
     {
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingCentre.this);
@@ -131,6 +143,7 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
 
 
 
+    //navigation link functionality so that you can move to a page
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -158,15 +171,6 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
             case R.id.nav_main:
                 startActivity(new Intent(ViewShoppingCentre.this, HomePage.class));
                 break;
-            case R.id.action_logout_admin2:
-            {
-                pref=this.getSharedPreferences("NewsTweetSettings", 0);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(ViewShoppingCentre.this,  MainActivity.class));
-            }
-            break;
         }
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -174,6 +178,7 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
 
     }
 
+    //show date and time to appear when picking a date
     private void showDateTimeDialog(final EditText date_time_in)
     {
         final Calendar calendar=Calendar.getInstance();
@@ -194,7 +199,7 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
                         calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
                         calendar.set(Calendar.MINUTE,minute);
 
-                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
                         date_time_in.setText(simpleDateFormat.format(calendar.getTime()));
                         datetime3 = simpleDateFormat.format(calendar.getTime());
                     }
@@ -205,5 +210,71 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
         };
 
         new DatePickerDialog(ViewShoppingCentre.this,dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+
+
+    //validate shop name and set input errors
+    private boolean validateShopName(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
+        {
+            shopname.requestFocus();
+            shopname.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            shopname.requestFocus();
+            shopname.setError("Shop name of length 1-50.");
+            return false;
+        }
+        else
+        {
+            shopname.setError(null);
+            return true;
+        }
+    }
+
+
+    //validate location and set input errors
+    private boolean validateLocation(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
+        {
+            location.requestFocus();
+            location.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            location.requestFocus();
+            location.setError("Location of length 1-50.");
+            return false;
+        }
+        else
+        {
+            location.setError(null);
+            return true;
+        }
+    }
+
+    //Validate date and set input errors
+    private boolean validateDate(String s)
+    {
+        if(s.isEmpty())
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError("Date cannot be empty.");
+            return false;
+        }
+        else
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError(null);
+            return true;
+        }
     }
 }

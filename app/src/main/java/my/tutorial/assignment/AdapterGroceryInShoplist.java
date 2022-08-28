@@ -3,11 +3,15 @@ package my.tutorial.assignment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +59,21 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
         myHolder.groceryid.setText("groceryID: " + current.groceryID);
         myHolder.description.setText("Desc: " + current.description);
         myHolder.amount.setText("Amount: " + current.amount);
+
+        if(current.img != null)
+        {
+            Bitmap imagebit = BitmapFactory.decodeByteArray(current.img, 0 , current.img.length);
+            myHolder.image.setImageBitmap(imagebit);
+        }
+
+        if(current.grocerychecked == 1)
+        {
+            myHolder.checkbox.setChecked(true);
+        }
+        else
+        {
+            myHolder.checkbox.setChecked(false);
+        }
     }
 
     // return total item from List
@@ -72,6 +91,8 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
         TextView amount;
         ImageView image;
         Button deletebutton;
+        CheckBox checkbox;
+        CheckBox checkboxdelete;
 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
@@ -83,68 +104,86 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
             description = (TextView) itemView.findViewById(R.id.description_des);
             image = (ImageView) itemView.findViewById(R.id.image_des);
             deletebutton = (Button) itemView.findViewById(R.id.delete_button_des);
+            checkbox = (CheckBox) itemView.findViewById(R.id.checkBox);
+            checkboxdelete = (CheckBox) itemView.findViewById(R.id.checkBox1);
 
-            deletebutton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
 
-                    AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
-                            // set message, title, and icon
-                            .setTitle("Delete")
-                            .setMessage("Do you want to Delete")
-                            .setIcon(R.drawable.ic_baseline_delete_forever_24)
+            //check box to indicate that the item has been picked up
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkButton();
+                }
+            });
 
-                            .setPositiveButton("Delete", (dialog, whichButton) -> {
-                                deleteGrocery();
-                                dialog.dismiss();
-                            })
-                            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .create();
-
-                    myQuittingDialogBox.show();
-
+            //check box schedule for deletion
+            checkboxdelete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkButtonDelete(isChecked);
                 }
             });
 
         }
 
-        @Override
-        public void onClick(View v)
+
+        public void checkButton()
         {
             int position = this.getAdapterPosition();
             DataGroceryInShopList groceryItem = data.get(position);
-            String id = groceryItem.getId();
-            String description = groceryItem.getDescription();
-            String amount = groceryItem.getAmount();
-            Intent intent = new Intent(context, HomePage.class);
-            intent.putExtra("id", id);
-            intent.putExtra("description", description);
-            intent.putExtra("amount", amount);
-            context.startActivity(intent);
-        }
-
-        private void deleteGrocery()
-        {
-            //Delete grocery item from shopping list in database
-            int position = this.getAdapterPosition();
-            DataGroceryInShopList groceryitems = data.get(position);
             DataBaseHelper databasehelper = new DataBaseHelper(context);
-            if(databasehelper.deleteGroceryItemInShoppingList(groceryitems))
+
+            //check item to see if it has been placed in the grocery list
+            if(checkbox.isChecked())
             {
-                Toast.makeText(context,"Deleted item from database.", Toast.LENGTH_SHORT).show();
+                if(databasehelper.checkTheGroceryIteam(groceryItem.id,1))
+                {
+                    groceryItem.grocerychecked = 1;
+                    Toast.makeText(context,"Updated succesfully.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(context,"Could not update.", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
             else
             {
-                Toast.makeText(context,"Could not delete.", Toast.LENGTH_SHORT).show();
-            }
 
-            Intent intent = new Intent(context, ViewShoppingListPage.class);
-            intent.putExtra("shopid", groceryitems.id );
-            context.startActivity(intent);
+                if(databasehelper.checkTheGroceryIteam(groceryItem.id,0))
+                {
+                    groceryItem.grocerychecked = 0;
+                    Toast.makeText(context,"Updated succesfully.", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(context,"Could not update.", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
+
+        @Override
+        public void onClick(View v)
+        {
+        }
+
+        //check item to schedule for deletion from check box
+        private void checkButtonDelete(boolean isChecked)
+        {
+            int position = this.getAdapterPosition();
+            DataGroceryInShopList listItem = data.get(position);
+
+            if(isChecked)
+            {
+                listItem.deleteitemchecked = true;
+            }
+            else
+            {
+                listItem.deleteitemchecked = false;
+            }
+        }
+
     }
 
 }

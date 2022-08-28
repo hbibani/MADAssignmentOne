@@ -35,7 +35,6 @@ import java.util.List;
 
 public class ViewShoppingListModifyPage extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
 
-    SharedPreferences pref;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
@@ -67,6 +66,8 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //initialize auto-edit text functionality
         autoedittext = (MaterialAutoCompleteTextView) findViewById(R.id.auto_text);
         initializeEditList();
 
@@ -90,7 +91,7 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
             }
         }
 
-        shopID = " ";
+        shopID = shopid;
 
         //auto complete on-text listener for the auto-edittext to get the shop id
         autoedittext.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,16 +144,25 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
     {
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListModifyPage.this);
         DataShoppingList shoppinglist = new DataShoppingList();
-        shoppinglist.shopid = shopID;
-        shoppinglist.dateTime = datetime3;
-        shoppinglist.shoppinglistid = shoppinglistid;
-        if(databasehelper.modifyShopInShoppingList(shoppinglist))
+
+
+        boolean validatedate = validateDate(datetime3);
+        boolean validateshopid = validateShopID(shopID);
+
+        //test validate to input into database
+        if(validatedate && validateshopid)
         {
-            Toast.makeText(getApplicationContext(),"Updated successfully.", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(),"Could not update.", Toast.LENGTH_SHORT).show();
+            shoppinglist.shopid = shopID;
+            shoppinglist.dateTime = datetime3;
+            shoppinglist.shoppinglistid = shoppinglistid;
+            if(databasehelper.modifyShopInShoppingList(shoppinglist))
+            {
+                Toast.makeText(getApplicationContext(),"Updated successfully.", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"Could not update.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -184,15 +194,6 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
             case R.id.nav_main:
                 startActivity(new Intent(ViewShoppingListModifyPage.this, HomePage.class));
                 break;
-            case R.id.action_logout_admin2:
-            {
-                pref=this.getSharedPreferences("NewsTweetSettings", 0);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(ViewShoppingListModifyPage.this,  MainActivity.class));
-            }
-            break;
         }
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -232,5 +233,48 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
         };
 
         new DatePickerDialog(ViewShoppingListModifyPage.this,dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+
+    //validate date and set errors if neeeded
+    private boolean validateDate(String s)
+    {
+        if(s.isEmpty())
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError("Date cannot be empty.");
+            return false;
+        }
+        else
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError(null);
+            return true;
+        }
+    }
+
+    //validate shopping id
+    private boolean validateShopID(String s)
+    {
+        String regex = "[0-9]{1,5}+";
+        if(s.equals(" "))
+        {
+            autoedittext.setText("");
+            autoedittext.requestFocus();
+            autoedittext.setError("Pick a shop from the list.");
+            return false;
+        }
+        else if(s.isEmpty())
+        {
+            autoedittext.setText("");
+            autoedittext.requestFocus();
+            autoedittext.setError("Pick a shop from the list.");
+            return false;
+        }
+        else
+        {
+            autoedittext.setError(null);
+            return true;
+        }
     }
 }

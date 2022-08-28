@@ -44,13 +44,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="0dp"
                 android:fontFamily="@font/poppinsbold"
                 android:gravity="center"
-                android:text="Add Grocery Item"
                 android:textColor="@color/colorAccent"
-                android:textSize="30sp"
-                tools:targetApi="jelly_bean" />
+                android:textSize="25sp"
+                tools:targetApi="jelly_bean"
+                android:text="Add Grocery Item" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -59,6 +59,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/poppinsbold"
                 android:text="Grocery Details"
+                android:padding="5dp"
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 tools:targetApi="jelly_bean" />
@@ -135,27 +136,6 @@
                     tools:targetApi="jelly_bean" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/datetext"
-                android:layout_width="185dp"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Date and Time"
-                android:fontFamily="@font/poppinsmedium"
-                android:textColor="@color/green"
-                android:textSize="15dp" />
-
-
-            <EditText
-                android:hint="SELECT DATE and Time"
-                android:id="@+id/date_time_input"
-                android:inputType="none"
-                android:textSize="10dp"
-                android:drawableEnd="@drawable/ic_datetime"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:fontFamily="@font/poppinsmedium"
-                android:background="@drawable/border" />
 
             <Button
                 android:id="@+id/medicationButton"
@@ -165,8 +145,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:text="Add"
-                android:onClick="addGroceryItem"
-                />
+                android:onClick="addGroceryItem" />
 
 
             <TextView
@@ -186,13 +165,22 @@
                 android:layout_height="2dp"
                 android:background="@color/colorAccent"/>
 
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/admissionList2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="400dp"
                 android:layout_weight="1"
                 android:paddingTop="10dp" />
+
+            <Button
+                android:id="@+id/delete_button_des"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="256dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="0dp"
+                android:text="Delete"
+                android:onClick="deleteGroceryItem" />
         </LinearLayout>
     </ScrollView>
 </androidx.drawerlayout.widget.DrawerLayout>

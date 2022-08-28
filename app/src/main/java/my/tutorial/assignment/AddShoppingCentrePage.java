@@ -57,6 +57,8 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
         location_text = findViewById(R.id.location_des);
         date_time_in.setInputType(InputType.TYPE_NULL);
         datetime3 = "";
+
+        //set tool bar and navigation functionality
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -66,6 +68,8 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //set date and time dialog
         date_time_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,23 +80,98 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
     }
 
 
-
-    public void addShoppingCentre(View view) {
-        DataBaseHelper databasehelper = new DataBaseHelper(AddShoppingCentrePage.this);
-        DataShoppingCentre datashoppingcentre = new DataShoppingCentre();
-        datashoppingcentre.shopName= shopname_text.getText().toString();
-        datashoppingcentre.dateTime = datetime3;
-        datashoppingcentre.location = location_text.getText().toString();
-        if(databasehelper.addShoppingCentre(datashoppingcentre))
+    //validate shopname and set input errors
+    private boolean validateShopName(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
         {
-            Toast.makeText(getApplicationContext(),"Added to the database.", Toast.LENGTH_SHORT).show();
+            shopname_text.requestFocus();
+            shopname_text.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            shopname_text.requestFocus();
+            shopname_text.setError("Shop name of length 1-50.");
+            return false;
         }
         else
         {
-            Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
+            shopname_text.setError(null);
+            return true;
         }
     }
 
+    //validate location and set input errors
+    private boolean validateLocation(String s)
+    {
+        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        if(s.isEmpty())
+        {
+            location_text.requestFocus();
+            location_text.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            location_text.requestFocus();
+            location_text.setError("Location of length 1-50.");
+            return false;
+        }
+        else
+        {
+            location_text.setError(null);
+            return true;
+        }
+    }
+
+    //validate date string and set input errors
+    private boolean validateDate(String s)
+    {
+        if(s.isEmpty())
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError("Date cannot be empty.");
+            return false;
+        }
+        else
+        {
+            date_time_in.requestFocus();
+            date_time_in.setError(null);
+            return true;
+        }
+    }
+
+    //add shopping centre to the database
+    public void addShoppingCentre(View view) {
+        DataBaseHelper databasehelper = new DataBaseHelper(AddShoppingCentrePage.this);
+        DataShoppingCentre datashoppingcentre = new DataShoppingCentre();
+        boolean validateshopname = validateShopName(shopname_text.getText().toString());
+        boolean validatelocation = validateLocation(location_text.getText().toString());
+        boolean validatedate = validateDate(datetime3);
+
+        if(validateshopname &&
+                validatelocation && validatedate)
+        {
+            datashoppingcentre.shopName= shopname_text.getText().toString();
+            datashoppingcentre.dateTime = datetime3;
+            datashoppingcentre.location = location_text.getText().toString();
+
+            if(databasehelper.addShoppingCentre(datashoppingcentre))
+            {
+                startActivity(new Intent(AddShoppingCentrePage.this, AddShoppingCentrePage.class));
+                Toast.makeText(getApplicationContext(),"Added to the database.", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    //show time dialog to pick the time and date for user
     private void showDateTimeDialog(final EditText date_time_in)
     {
         final Calendar calendar=Calendar.getInstance();
@@ -126,6 +205,8 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
         new DatePickerDialog(AddShoppingCentrePage.this,dateSetListener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+
+    //on navigation click the links needed to move to selected page
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -153,15 +234,6 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
             case R.id.nav_main:
                 startActivity(new Intent(AddShoppingCentrePage.this, HomePage.class));
                 break;
-            case R.id.action_logout_admin2:
-            {
-                pref=this.getSharedPreferences("NewsTweetSettings", 0);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.clear();
-                editor.commit();
-                startActivity(new Intent(AddShoppingCentrePage.this,  MainActivity.class));
-            }
-            break;
         }
         //close navigation drawer
         drawerLayout.closeDrawer(GravityCompat.START);

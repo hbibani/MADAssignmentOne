@@ -3,10 +3,13 @@ package my.tutorial.assignment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +62,15 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
         myHolder.shopname.setText("Shop: " + current.shopName);
         myHolder.location.setText("Loc: " + current.location);
         myHolder.date.setText("Date: " + current.dateTime);
+
+        if (current.present)
+        {
+            myHolder.image.setImageURI(Uri.parse("android.resource://my.tutorial.assignment/drawable/icon_shop_adapter"));
+        }
+        else
+        {
+            myHolder.image.setImageURI(Uri.parse("android.resource://my.tutorial.assignment/drawable/ic_closed"));
+        }
     }
 
     // return total item from List
@@ -80,6 +92,7 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
         Button modifyButton;
         Button mapButton;
         Button addButton;
+        CheckBox checkbox;
 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
@@ -91,34 +104,17 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
             location = (TextView) itemView.findViewById(R.id.location_des);
             date = (TextView) itemView.findViewById(R.id.date_des);
             image = (ImageView) itemView.findViewById(R.id.image_des);
-            deleteButton = (Button) itemView.findViewById(R.id.delete_button_des);
             modifyButton = (Button) itemView.findViewById(R.id.view_button_des);
             mapButton = (Button) itemView.findViewById(R.id.map_button_des);
             addButton = (Button) itemView.findViewById(R.id.add_button_des);
 
+            checkbox = (CheckBox) itemView.findViewById(R.id.checkBox);
 
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
 
-                    AlertDialog myQuittingDialogBox = new AlertDialog.Builder(v.getContext())
-                            // set message, title, and icon
-                            .setTitle("Delete")
-                            .setMessage("Do you want to Delete")
-                            .setIcon(R.drawable.ic_baseline_delete_forever_24)
-
-                            .setPositiveButton("Delete", (dialog, whichButton) -> {
-                                deleteShoppingList();
-                                dialog.dismiss();
-                            })
-                            .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .create();
-
-                    myQuittingDialogBox.show();
-
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkButton(isChecked);
                 }
             });
 
@@ -143,6 +139,22 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
             });
 
 
+        }
+
+        public void checkButton(boolean ischecked)
+        {
+            int position = this.getAdapterPosition();
+            DataShoppingList listItem = data.get(position);
+            DataBaseHelper databasehelper = new DataBaseHelper(context);
+
+            if(ischecked)
+            {
+                listItem.deletecheck = true;
+            }
+            else
+            {
+                listItem.deletecheck = false;
+            }
         }
 
         public void modifyButton()
@@ -185,15 +197,7 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
         @Override
         public void onClick(View v)
         {
-            int position = this.getAdapterPosition();
-            DataShoppingList shoplist = data.get(position);
-            String shoppingID = shoplist.getShoppinglistid();
-            String date = shoplist.getDateTime();
 
-            Intent intent = new Intent(context, HomePage.class);
-            intent.putExtra("shopid", shoppingID);
-            intent.putExtra("date", date);
-            context.startActivity(intent);
         }
 
 
@@ -216,8 +220,5 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
     }
-
-
-
 
 }
