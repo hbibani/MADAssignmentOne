@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/poppinsbold"
-                android:text="Shopping Lists"
+                android:text="Present"
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:padding="5dp"
@@ -73,8 +73,42 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/admissionList"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_weight="1"
+                android:layout_height="220dp"
+
+                android:paddingTop="10dp" />
+
+            <Button
+                android:id="@+id/delete_button_des"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="256dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="0dp"
+                android:text="Delete"
+                android:onClick="deleteShoppingListItem" />
+
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/poppinsbold"
+                android:text="Past"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:padding="5dp"
+                tools:targetApi="jelly_bean" />
+
+            <View
+                style="@style/Divider"
+                android:layout_height="2dp"
+                android:background="@color/colorAccent"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/admissionList1"
+                android:layout_width="wrap_content"
+                android:layout_height="220dp"
                 android:paddingTop="10dp" />
 
             <LinearLayout
@@ -83,16 +117,21 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
-                <Button
-                    android:id="@+id/delete_button_des"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="256dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="0dp"
-                    android:text="Delete"
-                    android:onClick="deleteShoppingListItem" />
             </LinearLayout>
+
+
+            <Button
+                android:id="@+id/delete_button_des1"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="256dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="0dp"
+                android:text="Delete"
+                android:onClick="deleteShoppingListItemPast" />
+
+
+
         </LinearLayout>
     </ScrollView>
 </androidx.drawerlayout.widget.DrawerLayout>

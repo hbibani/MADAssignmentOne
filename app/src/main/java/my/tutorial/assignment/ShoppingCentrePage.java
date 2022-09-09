@@ -55,6 +55,8 @@ public class ShoppingCentrePage extends AppCompatActivity implements NavigationV
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //fetch the centre details of the shopping centre page to place in recycler view
         fetchCentreDetails();
 
     }

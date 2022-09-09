@@ -85,6 +85,7 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        //create variables which will be assigned to the views with id in myholder, this will match the adapater xml files in the layout
         TextView shoplistid;
         TextView groceryid;
         TextView description;
@@ -98,6 +99,8 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
         public MyHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+
+            //set all the views with associated id
             shoplistid = (TextView) itemView.findViewById(R.id.shoplistid_des);
             groceryid = (TextView) itemView.findViewById(R.id.groceryid_des);
             amount = (TextView) itemView.findViewById(R.id.amount_des);
@@ -127,6 +130,7 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
         }
 
 
+        //check to see if item has been picked up, if it has been picked up, we check the item and update in database
         public void checkButton()
         {
             int position = this.getAdapterPosition();
@@ -136,10 +140,12 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
             //check item to see if it has been placed in the grocery list
             if(checkbox.isChecked())
             {
+
+                //update item details in the database to say it is checked
                 if(databasehelper.checkTheGroceryIteam(groceryItem.id,1))
                 {
                     groceryItem.grocerychecked = 1;
-                    Toast.makeText(context,"Updated succesfully.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context,"Updated succesfully.", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -151,10 +157,11 @@ public class AdapterGroceryInShoplist extends RecyclerView.Adapter<RecyclerView.
             else
             {
 
+                //set to checked item to false if it has been changed to not checked in the database
                 if(databasehelper.checkTheGroceryIteam(groceryItem.id,0))
                 {
                     groceryItem.grocerychecked = 0;
-                    Toast.makeText(context,"Updated succesfully.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context,"Updated succesfully.", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {

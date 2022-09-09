@@ -38,7 +38,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMaps2Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Intent intent = getIntent();
-        streetAddress = intent.getStringExtra("location");
+        //get location from intent and produce string for location
+        streetAddress = intent.getStringExtra("location") + " ,New South Wales, Australia";
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -58,16 +59,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        //use string from intent to get LatLng position from the address
         LatLng position = getLocationURLFromAddress(MapsActivity.this, streetAddress);
+
+        //get the markers from the position
         if (position != null) {
+
+            //add markers
             mMap.addMarker(new MarkerOptions().position(position).title(streetAddress));
+
+            //move camera to location
             mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+            //zoom in camera
             mMap.animateCamera(CameraUpdateFactory.zoomIn());
             mMap.animateCamera(CameraUpdateFactory.zoomTo(11), 2000, null);
         }
         else
         {
+            //if no position can be found set the address to default of the city of sydney
             LatLng sydney = new LatLng(-34, 151);
+
+            //place the marker in sydney
             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             Toast.makeText(getApplicationContext(),"Could not get address.", Toast.LENGTH_SHORT).show();
@@ -76,6 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    //this is a function which gets the LatLng value using the street address so the map can process it
     public static LatLng getLocationURLFromAddress(Context context,
                                                    String strAddress) {
 
@@ -83,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<Address> address;
         LatLng p1 = null;
 
+        //get the lattitude and longitude from location name
         try {
             address = coder.getFromLocationName(strAddress, 5);
             if (address == null) {
@@ -92,11 +108,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             location.getLatitude();
             location.getLongitude();
 
+            //get location latitude and longiture and place them in LtLng return value
             LatLng ret = new LatLng(location.getLatitude(), location.getLongitude());
 
+
+            //return LtLNg
             return ret;
-            //
-            // p1 = new LatLng(location.getLatitude(), location.getLongitude());
 
         } catch (Exception ex) {
 

@@ -76,11 +76,11 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        //create variables for each of the views to be assigned in the myholder, this will match the adapater xml files in the layout
         TextView id;
         TextView desc;
         TextView date;
         ImageView image;
-        Button deleteButton;
         Button viewButton;
         CheckBox checkbox;
 
@@ -88,6 +88,7 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
         public MyHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            //set all the views and assign them using the ids
             id = (TextView) itemView.findViewById(R.id.id_des);
             desc = (TextView) itemView.findViewById(R.id.description_des);
             date = (TextView) itemView.findViewById(R.id.date_des);
@@ -104,6 +105,7 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             });
 
+            //go to modification page and view grocery item details
             viewButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     viewButton();
@@ -119,8 +121,8 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
         {
             int position = this.getAdapterPosition();
             DataGroceryList groceryItem = data.get(position);
-            DataBaseHelper databasehelper = new DataBaseHelper(context);
 
+            //set position to deleted if is checked
             if(ischecked)
             {
                 groceryItem.deletecheck = true;
@@ -141,6 +143,7 @@ public class AdapterGroceryList extends RecyclerView.Adapter<RecyclerView.ViewHo
             String description = grocerylist.getDescription();
             String date = grocerylist.getDateTime();
 
+            //go to viewgroceryitem page for modification if needed
             Intent intent = new Intent(context, ViewGroceryItem.class);
             intent.putExtra("id", shoppingID);
             intent.putExtra("description", description);

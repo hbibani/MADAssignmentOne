@@ -54,6 +54,8 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_grocery_item);
         Intent intent = getIntent();
+
+        //retrieve the id from the itent so as  to view the grocery item and set widgets with ids
         id = intent.getStringExtra("id");
         datetime3 = "";
         descriptionedit = findViewById(R.id.description_des_text);
@@ -90,13 +92,17 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
     //get item information to input in text fields or other widgets
     private void getItemInformation()
     {
+        //create database helper to retrieve the information about grocery using the id from the intent
         DataBaseHelper databasehelper = new DataBaseHelper(ViewGroceryItem.this);
         datagrocery = databasehelper.getGroceryItemById(id);
         if(datagrocery != null)
         {
+            //set description values of the grocery item
             descriptionedit.setText(datagrocery.description);
             date_time_in.setText(datagrocery.dateTime);
             datetime3 = datagrocery.dateTime;
+
+            //get the picture of the item if it is not null
             if(datagrocery.img != null)
             {
                 Bitmap imagebit = BitmapFactory.decodeByteArray(datagrocery.img, 0 , datagrocery.img.length);
@@ -115,9 +121,11 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
     {
         DataBaseHelper databasehelper = new DataBaseHelper(ViewGroceryItem.this);
 
+        //validate the inputs
         boolean validatedescription =validateDescription(descriptionedit.getText().toString());
         boolean validatedate = validateDate(datetime3);
 
+        //check if image is present and if it is place it in image file
         if(selectedImageUri != null)
         {
             Bitmap bitmap = null;
@@ -127,15 +135,18 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
                 e.printStackTrace();
             }
             ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArray);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArray);
             datagrocery.img = byteArray.toByteArray();
         }
 
+
+        //if validation is succesfful, update the item
         if(validatedate && validatedescription)
         {
             String s1 = descriptionedit.getText().toString();
             String s2 = date_time_in.getText().toString();
 
+            //update the item in the database.
             if(databasehelper.updateGroceryItem(id,s1,s2,datagrocery.img))
             {
                 Intent intent = new Intent(ViewGroceryItem.this, ViewGroceryItem.class);
@@ -156,7 +167,10 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
     //delete grocery item from database
     public void deleteGroceryItem(View view)
     {
+        //create database helper
         DataBaseHelper databasehelper = new DataBaseHelper(ViewGroceryItem.this);
+
+        //delete the grocery item from the database using the grocery item information
         if(databasehelper.deleteGroceryItem(datagrocery))
         {
             Toast.makeText(ViewGroceryItem.this,"Deleted item from database.", Toast.LENGTH_SHORT).show();
@@ -241,6 +255,7 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
     //validate date and set input errors
     private boolean validateDate(String s)
     {
+        //check if string is empty and if it is request focus
         if(s.isEmpty())
         {
             date_time_in.requestFocus();

@@ -2,6 +2,7 @@ package my.tutorial.assignment;
 
 public class DataShoppingList {
 
+    //attributes
     public String shoppinglistid;
     public String shopid;
     public String dateTime;
@@ -14,6 +15,7 @@ public class DataShoppingList {
     public boolean present;
 
 
+    //datashopping list constructor
     public DataShoppingList(String shoppinglistid, String shopid, String dateTime, String shopName, String location) {
         this.shoppinglistid = shoppinglistid;
         this.shopid = shopid;
@@ -24,6 +26,8 @@ public class DataShoppingList {
         this.present = false;
     }
 
+
+    //getters and setters
     public String getShopName()
     {
         return shopName;
@@ -32,7 +36,6 @@ public class DataShoppingList {
     public String getLocation() {
         return location;
     }
-
     public String getShoppinglistid(){return this.shoppinglistid;}
     public String getShopid(){return this.shopid;}
     public String getDateTime(){
@@ -40,6 +43,7 @@ public class DataShoppingList {
     }
 
 
+    //default constructor
     public DataShoppingList()
     {
 

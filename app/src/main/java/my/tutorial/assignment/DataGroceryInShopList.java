@@ -2,6 +2,8 @@ package my.tutorial.assignment;
 
 public class DataGroceryInShopList {
 
+
+    //Attributes
     public String id;
     public String shopListID;
     public String groceryID;
@@ -12,9 +14,12 @@ public class DataGroceryInShopList {
     public int grocerychecked;
     public boolean deleteitemchecked;
 
+
+    //default constructor
     public DataGroceryInShopList() {
     }
 
+    //general constructor
     public DataGroceryInShopList(String id2,String shopListID, String groceryID, String description, String amount, String dateTime, int checked, byte[] img) {
         this.id = id2;
         this.shopListID = shopListID;
@@ -27,6 +32,8 @@ public class DataGroceryInShopList {
         this.deleteitemchecked = false;
     }
 
+
+    //getters and setters
     public String getId(){return this.id;}
     public String getShopListID(){
         return this.shopListID;

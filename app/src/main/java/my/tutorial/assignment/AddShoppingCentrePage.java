@@ -147,10 +147,14 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
     public void addShoppingCentre(View view) {
         DataBaseHelper databasehelper = new DataBaseHelper(AddShoppingCentrePage.this);
         DataShoppingCentre datashoppingcentre = new DataShoppingCentre();
+
+        //check validation from functions and retrieve booleans
         boolean validateshopname = validateShopName(shopname_text.getText().toString());
         boolean validatelocation = validateLocation(location_text.getText().toString());
         boolean validatedate = validateDate(datetime3);
 
+
+        //if validation is successful, add it to the database
         if(validateshopname &&
                 validatelocation && validatedate)
         {
@@ -158,6 +162,7 @@ public class AddShoppingCentrePage extends AppCompatActivity implements Navigati
             datashoppingcentre.dateTime = datetime3;
             datashoppingcentre.location = location_text.getText().toString();
 
+            //add items to the database
             if(databasehelper.addShoppingCentre(datashoppingcentre))
             {
                 startActivity(new Intent(AddShoppingCentrePage.this, AddShoppingCentrePage.class));

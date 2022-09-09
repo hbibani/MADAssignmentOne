@@ -1,6 +1,8 @@
 package my.tutorial.assignment;
 
 public class DataGroceryList {
+
+    // Attributes of datagrocery list
     public String groceryID;
     public String description;
     public String dateTime;
@@ -8,6 +10,7 @@ public class DataGroceryList {
     public boolean deletecheck;
 
 
+    //getters and setters
     public String getGroceryID(){return this.groceryID;}
     public String getDescription(){
         return this.description;
@@ -16,9 +19,12 @@ public class DataGroceryList {
         return this.dateTime;
     }
 
+
+    //default constructor
     public DataGroceryList() {
     }
 
+    //General consttuctor
     public DataGroceryList(String groceryID, String description, String dateTime, byte[] img) {
         this.groceryID = groceryID;
         this.description = description;

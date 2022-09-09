@@ -64,6 +64,7 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        //Get all the variables for the views that will be assigned in the my holder, this will match the adapater xml files in the layout
         TextView id;
         TextView shopname;
         TextView location;
@@ -76,6 +77,8 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
         public MyHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+
+            //assign the views with the corresponding ids
             id = (TextView) itemView.findViewById(R.id.id_des);
             shopname = (TextView) itemView.findViewById(R.id.shop_des);
             location = (TextView) itemView.findViewById(R.id.location_des);
@@ -138,6 +141,7 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
             String location = shopcentre.getLocation();
             String date = shopcentre.getDateTime();
 
+            //start intent with location for the maps activity
             Intent intent = new Intent(context, MapsActivity.class);
             intent.putExtra("shopid", shoppingID);
             intent.putExtra("shopname", shop);
@@ -156,6 +160,7 @@ public class AdapterShoppingCentre extends RecyclerView.Adapter<RecyclerView.Vie
             String location = shopcentre.getLocation();
             String date = shopcentre.getDateTime();
 
+            //go to view shopping centre page to modify pages and produce strings to access for retrieval of information from database
             Intent intent = new Intent(context, ViewShoppingCentre.class);
             intent.putExtra("shopid", shoppingID);
             intent.putExtra("shopname", shop);

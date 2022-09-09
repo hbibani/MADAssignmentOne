@@ -82,13 +82,13 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        //Set all the views to be accesesd later in the myholder, this will match the adapter xml files in the layout
         TextView id;
         TextView location;
         TextView date;
         TextView shopid;
         TextView shopname;
         ImageView image;
-        Button deleteButton;
         Button modifyButton;
         Button mapButton;
         Button addButton;
@@ -98,6 +98,7 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
         public MyHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            //assign the views with the corresponding ids
             id = (TextView) itemView.findViewById(R.id.id_des);
             shopid = (TextView) itemView.findViewById(R.id.shopid_des);
             shopname = (TextView) itemView.findViewById(R.id.shopname_des);
@@ -107,10 +108,9 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
             modifyButton = (Button) itemView.findViewById(R.id.view_button_des);
             mapButton = (Button) itemView.findViewById(R.id.map_button_des);
             addButton = (Button) itemView.findViewById(R.id.add_button_des);
-
             checkbox = (CheckBox) itemView.findViewById(R.id.checkBox);
 
-
+            //check box to see if item needs deleting
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -118,20 +118,21 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
 
-
+            //go to modify page if needed
             modifyButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     modifyButton();
                 }
             });
 
+            //find location on the map
             mapButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     mapButton();
                 }
             });
 
-
+            //view the shopping list to add grocery items to the shopping list
             addButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     addButton();
@@ -141,11 +142,11 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
+        //state that item has been checked if it needs to be deleted
         public void checkButton(boolean ischecked)
         {
             int position = this.getAdapterPosition();
             DataShoppingList listItem = data.get(position);
-            DataBaseHelper databasehelper = new DataBaseHelper(context);
 
             if(ischecked)
             {
@@ -157,6 +158,8 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
+
+        //go to shopping centre modication page
         public void modifyButton()
         {
             int position = this.getAdapterPosition();
@@ -164,32 +167,40 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
             String shoppinglistid = shoplist.shoppinglistid;
             String shopid = shoplist.getShopid();
             String date = shoplist.getDateTime();
+
+            //put all values to identify shopping centre
             Intent intent = new Intent(context, ViewShoppingListModifyPage.class);
             intent.putExtra("shoplistid", shoppinglistid);
             intent.putExtra("shopid", shopid);
             intent.putExtra("date", date);
-
             context.startActivity(intent);
         }
 
 
+        //get the address from location and place it in intent to locate shopping centre location
         public void mapButton()
         {
             int position = this.getAdapterPosition();
             DataShoppingList shoplist = data.get(position);
             String location = shoplist.getLocation();
+
+            //start maps activity and use location to find shopping centre associated with the shopping list
             Intent intent = new Intent(context, MapsActivity.class);
             intent.putExtra("location", location);
             context.startActivity(intent);
         }
 
+
+        //go to the shopping list page to add the items
         public void addButton()
         {
+
             int position = this.getAdapterPosition();
             DataShoppingList shoplist = data.get(position);
             String shoppingID = shoplist.getShoppinglistid();
-
             Intent intent = new Intent(context, ViewShoppingListPage.class);
+
+            //get id and place it in intent to view shopping list
             intent.putExtra("shopinglistid", shoppingID);
             context.startActivity(intent);
         }
@@ -198,25 +209,6 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
         public void onClick(View v)
         {
 
-        }
-
-
-        private void deleteShoppingList()
-        {
-            //Delete friend from database
-            int position = this.getAdapterPosition();
-            DataShoppingList shoppinglist = data.get(position);
-            DataBaseHelper databasehelper = new DataBaseHelper(context);
-            if(databasehelper.deleteShoppingList(shoppinglist))
-            {
-                Toast.makeText(context,"Deleted item from database.", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                Toast.makeText(context,"Could not delete.", Toast.LENGTH_SHORT).show();
-            }
-            Intent intent = new Intent(context, HomePage.class);
-            context.startActivity(intent);
         }
 
     }

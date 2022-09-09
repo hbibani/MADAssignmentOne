@@ -97,6 +97,8 @@ public class GroceryListPage extends AppCompatActivity implements NavigationView
     //fetch grocery details and then place them in the recycler view
     public void fetchGroceryDetails() {
         data3 = new ArrayList<>();
+
+        //fetch all grocery details from the database and then place them in recycler view
         DataBaseHelper databasehelper = new DataBaseHelper(GroceryListPage.this);
         data3 = databasehelper.getAllGroceryItems();
 
@@ -136,6 +138,8 @@ public class GroceryListPage extends AppCompatActivity implements NavigationView
     //delete grocery items which have been selected
     private void deleteGrocery() {
         boolean test = false;
+
+        //check to see if any items require deleting
         for(int i = 0; i < data3.size(); i++)
         {
             if(data3.get(i).deletecheck)
@@ -145,6 +149,8 @@ public class GroceryListPage extends AppCompatActivity implements NavigationView
             }
         }
 
+
+        //if item requires deleting then delete the item
         if(test)
         {
             for(int i = 0; i < data3.size(); i++)
@@ -159,8 +165,9 @@ public class GroceryListPage extends AppCompatActivity implements NavigationView
             Intent intent = new Intent(GroceryListPage.this, GroceryListPage.class);
             GroceryListPage.this.startActivity(intent);
         }
-        else
+        else //if we cannot find any to delete then display toast stating we cannot delete items
         {
+
             Toast.makeText(getApplicationContext(),"There are no items to delete.", Toast.LENGTH_SHORT).show();
         }
     }

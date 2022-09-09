@@ -55,6 +55,10 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_shopping_list_page);
+
+        //retrieve the id from the itent so as  to view the grocery item and set widgets with ids
+
+        //set tool bar for drawer layout
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
@@ -92,6 +96,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+        //Fetch grocery details for the list
         fetchGroceryDetails2();
     }
 
@@ -157,11 +162,13 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     //Add Grocery Item to shopping list
     public void addGroceryItem(View view)
     {
+        //Create database helper
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListPage.this);
         DataGroceryInShopList datagroceryitem = new DataGroceryInShopList();
         boolean validategroceryid = validateGroceryID(groceryID);
         boolean validateamount = validateAmount(amount.getText().toString());
 
+        //validate the amount
         if(validateamount && validategroceryid)
         {
             datagroceryitem.shopListID= shoppinglistID;
@@ -187,6 +194,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     //Get Grocery item details for recycler view to view the grocery list for that page
     public void fetchGroceryDetails2() {
 
+        //Open database helper and retrieve all the grocery items
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListPage.this);
         data3 = new ArrayList<>();
         data3.clear();
@@ -201,7 +209,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     // validate grocery and set-input errors if needed
     private boolean validateGroceryID(String s)
     {
-
+        //check string is equal to the beginning
         if(s.equals(" "))
         {
             autoedittext.setText("");
@@ -209,7 +217,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
             autoedittext.setError("Pick a grocery from the list.");
             return false;
         }
-        else if(s.isEmpty())
+        else if(s.isEmpty()) //check if empty
         {
             autoedittext.setText("");
             autoedittext.requestFocus();
@@ -228,13 +236,14 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     private boolean validateAmount(String s)
     {
         String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        //check if empty
         if(s.isEmpty())
         {
             amount.requestFocus();
             amount.setError("Field cannot be empty.");
             return false;
         }
-        else if(!s.matches(regex ))
+        else if(!s.matches(regex )) //check to match regex
         {
             amount.requestFocus();
             amount.setError("Amount of length 1-50.");
@@ -250,7 +259,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     //delete grocery item and show dialog before deleting
     public void deleteGroceryItem(View view)
     {
-
+        //Present Alert Dialog box
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
                 // set message, title, and icon
                 .setTitle("Delete")
@@ -275,6 +284,8 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
     private void deleteShoppingItem()
     {
         boolean test = false;
+
+        //check to see if any items need to be deleted
         for(int i = 0; i < data3.size(); i++)
         {
             if(data3.get(i).deleteitemchecked)
@@ -284,6 +295,7 @@ public class ViewShoppingListPage extends AppCompatActivity  implements Navigati
             }
         }
 
+        //if deleted items are in array delete the items
         if(test)
         {
             for(int i = 0; i < data3.size(); i++)

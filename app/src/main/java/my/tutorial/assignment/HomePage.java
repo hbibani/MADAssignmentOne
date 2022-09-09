@@ -40,6 +40,10 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     private AdapterShoppingList mAdapter;
     List<DataShoppingList> data3;
 
+    private RecyclerView mRVShoppingList1;
+    private AdapterShoppingList mAdapter1;
+    List<DataShoppingList> data4;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //fetch the shopping lists and place them in the two adapters
         try {
             fetchShoppingDetails();
         } catch (ParseException e) {
@@ -113,11 +119,14 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
 
+        //check to see if the values of the shopping list are current or in the past
         for(int i = 0 ; i < data3.size(); i++)
         {
             SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
             Date d1 = sdformat.parse(data3.get(i).dateTime);
             Date d2 = sdformat.parse(timeStamp);
+
+            //check to see if the date is now or in the past
             if(d2.compareTo(d1) < 0 || d2.compareTo(d1) == 0)
             {
                 data3.get(i).present = true;
@@ -129,18 +138,36 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
         }
 
+        data3.clear();
+        data3 = new ArrayList<>();
+        data4 = new ArrayList<>();
+        data4.clear();
+
+        //produce the past shopping lists and place them in data4 and then put them in the recycler view
         for(int i = 0; i < past.size(); i++)
         {
-            present.add(past.get(i));
+            data4.add(past.get(i));
         }
 
+        //place the present shopping lists in data3 and then place them in recycler view
+        for(int i = 0; i< present.size(); i++)
+        {
+
+            data3.add(present.get(i));
+        }
 
 
         // Setup and Handover data to recyclerview
         mRVShoppingList = (RecyclerView) findViewById(R.id.admissionList);
-        mAdapter = new AdapterShoppingList(HomePage.this, present);
+        mAdapter = new AdapterShoppingList(HomePage.this, data3);
         mRVShoppingList.setAdapter(mAdapter);
         mRVShoppingList.setLayoutManager(new LinearLayoutManager(HomePage.this));
+
+        // Setup and Handover data to recyclerview
+        mRVShoppingList1 = (RecyclerView) findViewById(R.id.admissionList1);
+        mAdapter1 = new AdapterShoppingList(HomePage.this, data4);
+        mRVShoppingList1.setAdapter(mAdapter1);
+        mRVShoppingList1.setLayoutManager(new LinearLayoutManager(HomePage.this));
     }
 
     //provide a dialogue before deleting item
@@ -170,6 +197,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
     private void deleteShoppingList() {
 
         boolean test = false;
+
+        //check to see if there are any items deleted, if not it will present a toast stating it cannot delete
         for(int i = 0; i < data3.size(); i++)
         {
             if(data3.get(i).deletecheck)
@@ -179,6 +208,8 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
         }
 
+
+        //if there are any items go through them one by one and delete them
         if(test)
         {
             for(int i = 0; i < data3.size(); i++)
@@ -192,8 +223,70 @@ public class HomePage extends AppCompatActivity implements NavigationView.OnNavi
             }
             startActivity(new Intent(HomePage.this, HomePage.class));
         }
+        else //if we cannot find any then send a toast saying we cannot delete them
+        {
+            Toast.makeText(getApplicationContext(),"There are no items to delete.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void deleteShoppingListItemPast(View view) {
+
+        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(view.getContext())
+                // set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Do you want to Delete")
+                .setIcon(R.drawable.ic_baseline_delete_forever_24)
+
+                .setPositiveButton("Delete", (dialog, whichButton) -> {
+                    deleteShoppingListPast();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+
+        myQuittingDialogBox.show();
+    }
+
+    //delete shopping list items
+    private void deleteShoppingListPast() {
+
+        boolean test = false;
+
+        //check to see if there are any items needed to be deleted
+        for(int i = 0; i < data4.size(); i++)
+        {
+            if(data4.get(i).deletecheck)
+            {
+                test = true;
+                break;
+            }
+        }
+
+
+        //if there are any items then delete them
+        if(test)
+        {
+
+            //go through the ones which need to be deleted
+            for(int i = 0; i < data4.size(); i++)
+            {
+                if(data4.get(i).deletecheck == true)
+                {
+                    DataShoppingList shoppinglist = data4.get(i);
+                    DataBaseHelper databasehelper = new DataBaseHelper(HomePage.this);
+                    databasehelper.deleteShoppingList(shoppinglist);
+                }
+            }
+            startActivity(new Intent(HomePage.this, HomePage.class));
+        }
         else
         {
+            //if we cannot find any to be deleted we send a toast
             Toast.makeText(getApplicationContext(),"There are no items to delete.", Toast.LENGTH_SHORT).show();
         }
 

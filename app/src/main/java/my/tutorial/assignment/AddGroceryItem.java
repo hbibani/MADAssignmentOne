@@ -55,6 +55,9 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_grocery_item);
+
+
+        //find edit text, images and others and match them with xml inputs
         date_time_in=findViewById(R.id.date_time_input);
         date_time_in.setInputType(InputType.TYPE_NULL);
         grocery_description = findViewById(R.id.patient_mrn_number);
@@ -127,9 +130,14 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
     public void addGroceryItem(View view) {
         DataBaseHelper databasehelper = new DataBaseHelper(AddGroceryItem.this);
         DataGroceryList datagrocerylist = new DataGroceryList();
+
+        //get booleans to check validation of items in the database
         boolean validatedescription =validateDescription(grocery_description.getText().toString());
         boolean validateid = validateIdentification(identification.getText().toString());
         boolean validatedate = validateDate(datetime3);
+
+
+        //check if image requires to be set from the uri of the image
         datagrocerylist.img = null;
         if(selectedImageUri != null)
         {
@@ -137,7 +145,7 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                 ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArray);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, byteArray);
                 datagrocerylist.img = byteArray.toByteArray();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -201,6 +209,7 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
     //validate date and set input errors
     private boolean validateDate(String s)
     {
+        //if it is empty or the value does not match regex then set focus on input
         if(s.isEmpty())
         {
             date_time_in.requestFocus();
@@ -219,6 +228,8 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
     private boolean validateDescription(String s)
     {
         String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+
+        //if it is empty or the value does not match regex then set focus on input
         if(s.isEmpty())
         {
             grocery_description.requestFocus();

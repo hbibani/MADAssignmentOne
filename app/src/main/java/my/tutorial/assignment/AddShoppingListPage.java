@@ -69,9 +69,12 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        //implement auto set on locatiohn
+        //implement auto set on location
         autoedittext = (MaterialAutoCompleteTextView) findViewById(R.id.auto_text);
+        //initialize autoedit text values
         initializeEditList();
+
+        //initialize date and set on click listner
         date_time_in=findViewById(R.id.date_time_input);
         date_time_in.setInputType(InputType.TYPE_NULL);
         datetime3 = "";
@@ -93,6 +96,7 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
                 String selected = (String) parent.getItemAtPosition(position);
                 for(int i = 0; i < shopLocationList.size(); i++)
                 {
+                    //set position of auto-edit text
                     if(shopLocationList.get(i).equals(selected))
                     {
                         positionactual = i;
@@ -111,7 +115,11 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     private void initializeEditList()
     {
         shopLocationList = new ArrayList<String>();
+
+        //fetch shop list from database to intitalize auto-text
         fetchShopList();
+
+        //get the adapater after it has been fetched and place the list in it
         shopAdapater = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shopLocationList);
         autoedittext.setAdapter(shopAdapater);
     }
@@ -121,9 +129,12 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     public void fetchShopList()
     {
         data3 = new ArrayList<>();
+
+        //retrieve information from database
         DataBaseHelper databasehelper = new DataBaseHelper(AddShoppingListPage.this);
         data3 = databasehelper.getAllShoppingCentres();
 
+        //populate the list from the values taken from the database
         for(int i = 0; i< data3.size(); i++)
         {
             String shoppingdetails = data3.get(i).shopName + " " + data3.get(i).location;
@@ -136,10 +147,13 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     {
         DataBaseHelper databasehelper = new DataBaseHelper(AddShoppingListPage.this);
         DataShoppingList shoppinglist = new DataShoppingList();
+
+        //validate items
         boolean validateshop = validateShop(shopID);
         boolean validateid = validateIdentification(identification.getText().toString());
-
         boolean validatedate = validateDate(datetime3);
+
+        //if validation is correct add the shopping centre to the datbase
         if(validatedate && validateshop && validateid)
         {
             shoppinglist.shoppinglistid = identification.getText().toString();
@@ -152,6 +166,7 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
             }
             else
             {
+                //if it could not be added display toast
                 Toast.makeText(getApplicationContext(),"Could not add to the database.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -231,6 +246,8 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     //validate date time string and set input errors if needed
     private boolean validateDate(String s)
     {
+
+        //if is empty set focus
         if(s.isEmpty())
         {
             date_time_in.requestFocus();
@@ -249,6 +266,8 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     private boolean validateShop(String s)
     {
         String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+
+        //if it is empty or the value does not match regex then set focus on input
         if(s.isEmpty())
         {
             autoedittext.requestFocus();
@@ -280,6 +299,8 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     private boolean validateIdentification(String s)
     {
         String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+
+        //if it is empty or the value does not match regex then set focus on input
         if(s.isEmpty())
         {
             identification.requestFocus();

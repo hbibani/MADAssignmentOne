@@ -160,6 +160,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         boolean isSuccessFul = false;
         SQLiteDatabase db = this.getWritableDatabase();
+        //set content values for update using the strings specified in the function
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_GROCERYID, s1);
         cv.put(COLUMN_DESCRIPTION, s2);
@@ -184,6 +185,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public DataGroceryList getGroceryItemById(String id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
+
+        //return grocery item by searching the id in the database, and return the one which matches the query
         String queryString = "SELECT * FROM " + GROCERY_ITEM_TABLE + " WHERE " + COLUMN_GROCERYID + " = " + id;
         Cursor cursor = db.rawQuery(queryString,null);
         if(cursor.moveToFirst())
@@ -192,12 +195,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String description = cursor.getString(1);
             String datetime = cursor.getString(2);
             byte[] img = cursor.getBlob(3);
+
+            //return item
             DataGroceryList groceryitem = new DataGroceryList(Integer.toString(groceritemid), description, datetime, img);
             cursor.close();
             db.close();
             return groceryitem;
         }
 
+
+        //close database
         cursor.close();
         db.close();
         return null;
@@ -212,9 +219,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        //Get the content values from the inputs
         cv.put(COLUMN_SHOPNAME, datashopping.shopName);
         cv.put(COLUMN_DATETIME_SHOPPINGCENTRE, datashopping.dateTime);
         cv.put(COLUMN_LOCATION, datashopping.location);
+
+        //add this to the database
         long insert = db.insert(SHOPPING_CENTRE_TABLE, null, cv);
         if(insert == -1)
         {
@@ -311,6 +321,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public DataShoppingCentre getShoppingCentreById(String id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
+
+        //get the shopping centre table using the shopid
         String queryString = "SELECT * FROM " + SHOPPING_CENTRE_TABLE + " WHERE " + COLUMN_SHOPID + " = " + id;
         Cursor cursor = db.rawQuery(queryString,null);
         if(cursor.moveToFirst())
@@ -319,6 +331,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             String shopname = cursor.getString(1);
             String location = cursor.getString(2);
             String datetime = cursor.getString(3);
+
+            //return the values from the shopping centre using datashoppingcentre class
             DataShoppingCentre shoppingcentre = new DataShoppingCentre(Integer.toString(shopid),shopname,location, datetime);
             cursor.close();
             db.close();
@@ -337,6 +351,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         boolean isSuccessFul = false;
         SQLiteDatabase db = this.getWritableDatabase();
+
+        //create content values and update them using the strings as input
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_SHOPID, s1);
         cv.put(COLUMN_SHOPNAME, s2);
@@ -364,6 +380,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean addShoppingList(DataShoppingList datashopping)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        //create content values from the data input and insert the shopping list into datbase
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_SHOPPINGLISTID, datashopping.shoppinglistid);
         cv.put(COLUMN_SHOPID, datashopping.shopid);
@@ -386,13 +404,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         List<DataShoppingList> returnList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+
+        //Retrieve the shopping list and join them to the other tables
         String queryString = "SELECT * FROM " + SHOPPING_LIST_TABLE + " join SHOPPING_CENTRE_TABLE on SHOPPING_CENTRE_TABLE.COLUMN_SHOPID = SHOPPING_LIST_TABLE.COLUMN_SHOPID";
         Cursor cursor = db.rawQuery(queryString,null);
 
 
         if(cursor.moveToFirst())
         {
-            //loop through the cursor for the results
+            //loop through the cursor for the results and send them to the return list
             do{
                 int shoplistid = cursor.getInt(0);
                 int shopid = cursor.getInt(1);
@@ -408,6 +428,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             // nothing will be added to list
         }
 
+        //return list is sent back
         cursor.close();
         db.close();
         return returnList;
@@ -454,6 +475,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean addGroceryItemToShoppingList(DataGroceryInShopList datashopping)
     {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        //create content values and place the information from the datagroceryinshoplist class and insert into database
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_SHOPPINGLISTID, datashopping.shopListID);
         cv.put(COLUMN_GROCERYID, datashopping.groceryID);
@@ -479,6 +502,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         List<DataGroceryInShopList> returnList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+
+        //get all grocery items in the shopping list
         String queryString = "SELECT * FROM " + SHOPPINGLIST_GROCERY_TABLE + " join GROCERY_ITEM_TABLE on SHOPPINGLIST_GROCERY_TABLE.groceryid = GROCERY_ITEM_TABLE.groceryid WHERE " + COLUMN_SHOPPINGLISTID+ " = " + s;
         Cursor cursor = db.rawQuery(queryString,null);
 
@@ -495,6 +520,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 String description = cursor.getString(6);
                 String datetime = cursor.getString(7);
                 byte[] img = cursor.getBlob(8);
+                //get each item and put in the list
                 DataGroceryInShopList groceryitem = new DataGroceryInShopList(Integer.toString(shoppinglistgroeryid),Integer.toString(shoplistid ), Integer.toString(groceryid),description ,amount, datetime,checked, img);
                 returnList.add(groceryitem);
             }while(cursor.moveToNext());

@@ -43,13 +43,18 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_shpping_centre);
+
+
+        //retrieve the id from the itent so as  to view the grocery item and set widgets with ids
+        Intent intent = getIntent();
         shopname = findViewById(R.id.shop_name);
         location = findViewById(R.id.location_des);
-        Intent intent = getIntent();
         id = intent.getStringExtra("shopid");
         datetime3 = intent.getStringExtra("date");
         date_time_in=findViewById(R.id.date_time_input);
         date_time_in.setInputType(InputType.TYPE_NULL);
+
+        //get the item information from the database using the value of intent id
         getItemInformation();
 
 
@@ -74,14 +79,18 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     }
 
 
-    //get item information to display on screen
+    //get item information to display on text fields for input
     private void getItemInformation()
     {
         datashopping = new DataShoppingCentre();
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingCentre.this);
+
+        //retrieve datashopping item from the database and then set the name of the details using the id
         datashopping = databasehelper.getShoppingCentreById(id);
         if(datashopping != null)
         {
+
+            //set the name and details of the shopping centre
             shopname.setText(datashopping.shopName);
             location.setText(datashopping.location);
             date_time_in.setText(datashopping.dateTime);
@@ -97,11 +106,17 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     //modify shopping centre details in database
     public void modifyShoppingCentre(View view)
     {
+
+        //create databasehelper to delete
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingCentre.this);
 
+        //retreive strings from inputs in the textfields and validate them
         boolean validateshopname = validateShopName(shopname.getText().toString());
         boolean validatelocation = validateLocation(location.getText().toString());
         boolean validatedate = validateDate(datetime3);
+
+
+        //check if validation is successful and then delete
         if(validateshopname &&
                 validatelocation && validatedate)
         {
@@ -128,7 +143,11 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     //delete shopping centere from database
     public void deleteShoppingCentre(View view)
     {
+
+        //create database helper
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingCentre.this);
+
+        //delete item and check if it was successful
         if(databasehelper.deleteShoppingCentre(datashopping))
         {
             Toast.makeText(ViewShoppingCentre.this,"Deleted item from database.", Toast.LENGTH_SHORT).show();
@@ -218,6 +237,8 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     private boolean validateShopName(String s)
     {
         String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+
+        //check if empty or does not match regex and set focus on input
         if(s.isEmpty())
         {
             shopname.requestFocus();
@@ -242,6 +263,8 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     private boolean validateLocation(String s)
     {
         String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+
+        //check if empty or it does not match regex and set focus
         if(s.isEmpty())
         {
             location.requestFocus();
@@ -264,6 +287,8 @@ public class ViewShoppingCentre extends AppCompatActivity implements NavigationV
     //Validate date and set input errors
     private boolean validateDate(String s)
     {
+
+        //check if string is empty and if it is set focus on this plane
         if(s.isEmpty())
         {
             date_time_in.requestFocus();

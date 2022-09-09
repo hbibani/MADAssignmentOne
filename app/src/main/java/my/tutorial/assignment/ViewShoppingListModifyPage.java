@@ -53,10 +53,13 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
         setContentView(R.layout.activity_view_shopping_list_modify_page);
 
         Intent intent = getIntent();
+
+        //retrieve information from intent to start page activity
         shoppinglistid  = intent.getStringExtra("shoplistid");
         shopid = intent.getStringExtra("shopid");
         datetime3 = intent.getStringExtra("date");
 
+        //produce tool bar and navigation functionality
         toolbar  = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -131,6 +134,7 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
         DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListModifyPage.this);
         data3 = databasehelper.getAllShoppingCentres();
 
+        //Produce strings to add it to the list of values
         for(int i = 0; i< data3.size(); i++)
         {
             String shoppingdetails = data3.get(i).shopName + " " + data3.get(i).location;
@@ -239,6 +243,7 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
     //validate date and set errors if neeeded
     private boolean validateDate(String s)
     {
+        //check if empty and if it is set request to input value
         if(s.isEmpty())
         {
             date_time_in.requestFocus();
@@ -257,6 +262,8 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
     private boolean validateShopID(String s)
     {
         String regex = "[0-9]{1,5}+";
+
+        //test if empty or has a line
         if(s.equals(" "))
         {
             autoedittext.setText("");
