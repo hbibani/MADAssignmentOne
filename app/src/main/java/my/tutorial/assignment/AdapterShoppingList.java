@@ -171,8 +171,6 @@ public class AdapterShoppingList extends RecyclerView.Adapter<RecyclerView.ViewH
             //put all values to identify shopping centre
             Intent intent = new Intent(context, ViewShoppingListModifyPage.class);
             intent.putExtra("shoplistid", shoppinglistid);
-            intent.putExtra("shopid", shopid);
-            intent.putExtra("date", date);
             context.startActivity(intent);
         }
 

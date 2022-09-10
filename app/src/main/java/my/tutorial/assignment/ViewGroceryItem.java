@@ -37,6 +37,7 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
 
     EditText date_time_in;
     String datetime3;
+    EditText identification;
     EditText descriptionedit;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -49,13 +50,14 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
     ImageView IVPreviewImage;
     byte [] img;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_grocery_item);
         Intent intent = getIntent();
 
-        //retrieve the id from the itent so as  to view the grocery item and set widgets with ids
+        //retrieve the id from the itent so as  to view the grocery item and set views with ids
         id = intent.getStringExtra("id");
         datetime3 = "";
         descriptionedit = findViewById(R.id.description_des_text);
@@ -63,6 +65,7 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
         date_time_in.setInputType(InputType.TYPE_NULL);
         IVPreviewImage = findViewById(R.id.IVPreviewImage);
         datagrocery = new DataGroceryList();
+        identification = findViewById(R.id.id_des);
 
         //get item information to set for input text fields
         getItemInformation();
@@ -100,6 +103,7 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
             //set description values of the grocery item
             descriptionedit.setText(datagrocery.description);
             date_time_in.setText(datagrocery.dateTime);
+            identification.setText(id);
             datetime3 = datagrocery.dateTime;
 
             //get the picture of the item if it is not null
@@ -124,6 +128,7 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
         //validate the inputs
         boolean validatedescription =validateDescription(descriptionedit.getText().toString());
         boolean validatedate = validateDate(datetime3);
+        boolean validateid = validateIdentification(identification.getText().toString());
 
         //check if image is present and if it is place it in image file
         if(selectedImageUri != null)
@@ -140,17 +145,18 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
         }
 
 
-        //if validation is succesfful, update the item
-        if(validatedate && validatedescription)
+        //if validation is successful, update the item
+        if(validatedate && validatedescription && validateid)
         {
             String s1 = descriptionedit.getText().toString();
             String s2 = date_time_in.getText().toString();
+            String s3 = identification.getText().toString();
 
             //update the item in the database.
-            if(databasehelper.updateGroceryItem(id,s1,s2,datagrocery.img))
+            if(databasehelper.updateGroceryItem(id,s1,s2,datagrocery.img,s3))
             {
                 Intent intent = new Intent(ViewGroceryItem.this, ViewGroceryItem.class);
-                intent.putExtra("id", id);
+                intent.putExtra("id", s3);
                 ViewGroceryItem.this.startActivity(intent);
                 Toast.makeText(ViewGroceryItem.this,"Update successful.", Toast.LENGTH_SHORT).show();
             }
@@ -323,6 +329,32 @@ public class ViewGroceryItem extends AppCompatActivity implements NavigationView
                     IVPreviewImage.setBackground(null);
                 }
             }
+        }
+    }
+
+
+    //validate identification and set input errors if needed
+    private boolean validateIdentification(String s)
+    {
+        String regex = "[0-9]{1,5}+";
+
+        //if it is empty or the value does not match regex then set focus on input
+        if(s.isEmpty())
+        {
+            identification.requestFocus();
+            identification.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            identification.requestFocus();
+            identification.setError("Integer of length 1-5.");
+            return false;
+        }
+        else
+        {
+            identification.setError(null);
+            return true;
         }
     }
 }

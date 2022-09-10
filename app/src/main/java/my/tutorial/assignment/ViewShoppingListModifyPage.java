@@ -11,6 +11,8 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.MenuItem;
@@ -47,6 +49,8 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
     List<DataShoppingCentre> data3;
     String shopid;
     String shoppinglistid;
+    EditText identification;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +60,10 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
 
         //retrieve information from intent to start page activity
         shoppinglistid  = intent.getStringExtra("shoplistid");
-        shopid = intent.getStringExtra("shopid");
-        datetime3 = intent.getStringExtra("date");
+        getShoppingListInformation();
+        identification = findViewById(R.id.id_des);
+        identification.setText(shoppinglistid);
+
 
         //produce tool bar and navigation functionality
         toolbar  = findViewById(R.id.toolbar2);
@@ -116,6 +122,24 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
         });
     }
 
+    private void getShoppingListInformation()
+    {
+        DataBaseHelper databasehelper = new DataBaseHelper(ViewShoppingListModifyPage.this);
+        DataShoppingList data;
+        data = databasehelper.getShoppingListItemById(shoppinglistid);
+
+        if(data != null)
+        {
+            //set description values of the grocery item
+            shopid = data.shopid;
+            datetime3 = data.dateTime;
+        }
+        else
+        {
+            Toast.makeText(ViewShoppingListModifyPage.this,"Could not retrieve information.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     //Populate the search text here
     private void initializeEditList()
@@ -152,19 +176,29 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
 
         boolean validatedate = validateDate(datetime3);
         boolean validateshopid = validateShopID(shopID);
+        boolean validateid = validateIdentification(identification.getText().toString());
 
         //test validate to input into database
-        if(validatedate && validateshopid)
+        if(validatedate && validateshopid && validateid)
         {
             shoppinglist.shopid = shopID;
             shoppinglist.dateTime = datetime3;
-            shoppinglist.shoppinglistid = shoppinglistid;
-            if(databasehelper.modifyShopInShoppingList(shoppinglist))
+            shoppinglist.shoppinglistid =  identification.getText().toString();
+
+            if(databasehelper.modifyShopInShoppingList(shoppinglist, shoppinglistid))
             {
+                Intent intent = new Intent(ViewShoppingListModifyPage.this, ViewShoppingListModifyPage.class);
+                //get id and place it in intent to view shopping list
+                intent.putExtra("shoplistid", shoppinglist.shoppinglistid);
+                ViewShoppingListModifyPage.this.startActivity(intent);
                 Toast.makeText(getApplicationContext(),"Updated successfully.", Toast.LENGTH_SHORT).show();
             }
             else
             {
+                Intent intent = new Intent(ViewShoppingListModifyPage.this, ViewShoppingListModifyPage.class);
+                //get id and place it in intent to view shopping list
+                intent.putExtra("shoplistid", shoppinglistid);
+                ViewShoppingListModifyPage.this.startActivity(intent);
                 Toast.makeText(getApplicationContext(),"Could not update.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -281,6 +315,31 @@ public class ViewShoppingListModifyPage extends AppCompatActivity  implements Na
         else
         {
             autoedittext.setError(null);
+            return true;
+        }
+    }
+
+    //validate identification and set input errors if needed
+    private boolean validateIdentification(String s)
+    {
+        String regex = "[0-9]{1,5}+";
+
+        //if it is empty or the value does not match regex then set focus on input
+        if(s.isEmpty())
+        {
+            identification.requestFocus();
+            identification.setError("Field cannot be empty.");
+            return false;
+        }
+        else if(!s.matches(regex ))
+        {
+            identification.requestFocus();
+            identification.setError("Integer of length 1-5.");
+            return false;
+        }
+        else
+        {
+            identification.setError(null);
             return true;
         }
     }

@@ -298,7 +298,7 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
     //validate identification and set input errors if needed
     private boolean validateIdentification(String s)
     {
-        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        String regex = "[0-9]{1,5}+";
 
         //if it is empty or the value does not match regex then set focus on input
         if(s.isEmpty())
@@ -310,7 +310,7 @@ public class AddShoppingListPage extends AppCompatActivity implements Navigation
         else if(!s.matches(regex ))
         {
             identification.requestFocus();
-            identification.setError("Description of length 1-50.");
+            identification.setError("Integer of length 1-5.");
             return false;
         }
         else

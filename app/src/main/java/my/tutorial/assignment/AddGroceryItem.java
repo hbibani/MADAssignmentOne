@@ -253,7 +253,7 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
     //validate identification and set input errors
     private boolean validateIdentification(String s)
     {
-        String regex = "[a-zA-Z0-9@+'.!#$'&quot;,:;=/\\(\\),\\-\\s]{1,50}+";
+        String regex = "[0-9]{1,5}+";
         if(s.isEmpty())
         {
             identification.requestFocus();
@@ -263,7 +263,7 @@ public class AddGroceryItem extends AppCompatActivity implements NavigationView.
         else if(!s.matches(regex ))
         {
             identification.requestFocus();
-            identification.setError("Description of length 1-50.");
+            identification.setError("Integer of length 1-5.");
             return false;
         }
         else

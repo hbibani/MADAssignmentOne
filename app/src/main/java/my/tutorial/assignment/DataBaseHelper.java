@@ -156,13 +156,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     //Update grocery Details
-    public boolean updateGroceryItem(String s1, String s2, String s3, byte[] img)
+    public boolean updateGroceryItem(String s1, String s2, String s3, byte[] img, String s)
     {
         boolean isSuccessFul = false;
         SQLiteDatabase db = this.getWritableDatabase();
         //set content values for update using the strings specified in the function
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_GROCERYID, s1);
+        cv.put(COLUMN_GROCERYID, s);
         cv.put(COLUMN_DESCRIPTION, s2);
         cv.put(COLUMN_DATETIME_GROCERYITEM, s3);
         cv.put(COLUMN_IMAGE, img);
@@ -558,17 +558,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     //Modify shop and date in shopping list
-    public boolean modifyShopInShoppingList(DataShoppingList shoppinglist)
+    public boolean modifyShopInShoppingList(DataShoppingList shoppinglist, String shoppinglistid)
     {
         boolean isSuccessFul = false;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put(COLUMN_SHOPPINGLISTID, shoppinglist.shoppinglistid);
         cv.put(COLUMN_SHOPID, shoppinglist.shopid);
         cv.put(COLUMN_DATETIME_SHOPPINGLIST, shoppinglist.dateTime);
 
         try {
             // Execute the update
-            db.update(SHOPPING_LIST_TABLE, cv, COLUMN_SHOPPINGLISTID+"=?", new String[]{shoppinglist.shoppinglistid});
+            db.update(SHOPPING_LIST_TABLE, cv, COLUMN_SHOPPINGLISTID+"=?", new String[]{shoppinglistid});
             isSuccessFul = true;
         } catch(Exception e) {
             db.close();
@@ -599,5 +600,32 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             return isSuccessFul;
         }
 
+    }
+
+    public DataShoppingList getShoppingListItemById(String shoppinglistid)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        //return grocery item by searching the id in the database, and return the one which matches the query
+        String queryString = "SELECT * FROM " + SHOPPING_LIST_TABLE + " WHERE " + COLUMN_SHOPPINGLISTID + " = " + shoppinglistid;
+        Cursor cursor = db.rawQuery(queryString,null);
+        if(cursor.moveToFirst())
+        {
+            int id = cursor.getInt(0);
+            int shopid = cursor.getInt(1);
+            String datetime = cursor.getString(2);
+
+            //return item
+            DataShoppingList item = new DataShoppingList(Integer.toString(id), Integer.toString(shopid), datetime);
+            cursor.close();
+            db.close();
+            return item;
+        }
+
+
+        //close database
+        cursor.close();
+        db.close();
+        return null;
     }
 }

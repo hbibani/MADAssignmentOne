@@ -61,6 +61,40 @@
             android:background="@color/green"/>
 
 
+
+        <TextView
+            android:id="@+id/idtext"
+            android:layout_width="185dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Identification"
+            android:fontFamily="@font/poppinsmedium"
+            android:textColor="@color/green"
+            android:textSize="17dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/id_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:hint="ID"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/id_des"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_description"
+                android:fontFamily="@font/poppinsmedium"
+                tools:targetApi="jelly_bean" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
         <TextView
             android:id="@+id/searchtext"
             android:layout_width="185dp"

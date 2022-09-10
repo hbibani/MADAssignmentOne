@@ -26,6 +26,13 @@ public class DataShoppingList {
         this.present = false;
     }
 
+    //datashopping list constructor
+    public DataShoppingList(String shoppinglistid, String shopid, String dateTime) {
+        this.shoppinglistid = shoppinglistid;
+        this.shopid = shopid;
+        this.dateTime = dateTime;
+    }
+
 
     //getters and setters
     public String getShopName()
