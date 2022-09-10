@@ -33,7 +33,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_GROCERYCHECKED = "COLUMN_GROCERYCHECKED";
     public static final String COLUMN_IMAGE = "COLUMN_IMAGE";
     public DataBaseHelper(@Nullable Context context) {
-        super(context, "shoppinglistdataperfect.db", null, 2);
+        super(context, "shoppinglistdataperfectperfect.db", null, 2);
     }
 
     //This is called the first time a database is accessed.
@@ -170,6 +170,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             // Execute the update
             db.update(GROCERY_ITEM_TABLE, cv, COLUMN_GROCERYID+"=?", new String[]{s1});
+            ContentValues cv1 = new ContentValues();
+            cv1.put(COLUMN_GROCERYID, s);
+            db.update(SHOPPINGLIST_GROCERY_TABLE, cv1, COLUMN_GROCERYID+"=?", new String[]{s1});
             isSuccessFul = true;
         } catch(Exception e) {
             db.close();
@@ -562,6 +565,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     {
         boolean isSuccessFul = false;
         SQLiteDatabase db = this.getWritableDatabase();
+
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_SHOPPINGLISTID, shoppinglist.shoppinglistid);
         cv.put(COLUMN_SHOPID, shoppinglist.shopid);
@@ -570,6 +574,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             // Execute the update
             db.update(SHOPPING_LIST_TABLE, cv, COLUMN_SHOPPINGLISTID+"=?", new String[]{shoppinglistid});
+            ContentValues cv1 = new ContentValues();
+            cv1.put(COLUMN_SHOPPINGLISTID, shoppinglist.shoppinglistid);
+            db.update(SHOPPINGLIST_GROCERY_TABLE, cv1, COLUMN_SHOPPINGLISTID+"=?", new String[]{shoppinglistid});
             isSuccessFul = true;
         } catch(Exception e) {
             db.close();
